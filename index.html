@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>Physio BodyMap – Muskel-Avatar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <style>
     :root {
       --bg-page: #f3f4f6;
@@ -12,192 +11,77 @@
       --border: #e5e7eb;
       --text: #111827;
       --muted: #6b7280;
-
       --region-border: #2563eb;
-      --region-fill-hover: rgba(96, 165, 250, 0.18);
-      --region-fill-selected: rgba(37, 99, 235, 0.38);
+      --region-fill-hover: rgba(96,165,250,0.18);
+      --region-fill-selected: rgba(37,99,235,0.38);
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg-page);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 1.5rem;
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:var(--bg-page);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:1.5rem;
     }
-
-    .card {
-      width: 100%;
-      max-width: 1100px;
-      background: var(--bg-card);
-      border-radius: 1rem;
-      border: 1px solid var(--border);
-      box-shadow:
-        0 20px 25px -5px rgba(15, 23, 42, 0.06),
-        0 8px 10px -6px rgba(15, 23, 42, 0.04);
-      padding: 1.4rem 1.7rem 1.1rem;
+    .card{
+      width:100%;
+      max-width:1100px;
+      background:var(--bg-card);
+      border-radius:1rem;
+      border:1px solid var(--border);
+      box-shadow:0 20px 25px -5px rgba(15,23,42,.06),0 8px 10px -6px rgba(15,23,42,.04);
+      padding:1.4rem 1.7rem 1.1rem;
     }
-
-    .card-header {
-      margin-bottom: 0.9rem;
+    .card-header{margin-bottom:.9rem;}
+    .card-title{font-size:1.25rem;font-weight:600;}
+    .card-subtitle{font-size:.9rem;color:var(--muted);margin-top:.15rem;}
+    .hint{font-size:.8rem;color:var(--muted);margin-top:.6rem;}
+    .bodies{
+      display:flex;flex-wrap:wrap;gap:1.25rem;
+      justify-content:center;align-items:flex-start;
     }
-
-    .card-title {
-      font-size: 1.25rem;
-      font-weight: 600;
+    .body-panel{
+      flex:1;min-width:280px;max-width:380px;
+      border-radius:.9rem;border:1px solid var(--border);
+      background:#fff;padding:.75rem;
     }
-
-    .card-subtitle {
-      font-size: 0.9rem;
-      color: var(--muted);
-      margin-top: 0.15rem;
+    .body-label{font-size:.8rem;font-weight:500;color:var(--muted);margin-bottom:.25rem;}
+    .body-figure{
+      position:relative;width:100%;padding-bottom:220%;
+      overflow:hidden;border-radius:.75rem;background:#fff;
     }
-
-    .hint {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 0.6rem;
+    .body-img{
+      position:absolute;inset:0;width:100%;height:100%;
+      object-fit:contain;user-select:none;-webkit-user-drag:none;
+      pointer-events:none;
     }
-
-    .bodies {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-      justify-content: center;
-      align-items: flex-start;
+    .body-overlay{position:absolute;inset:0;width:100%;height:100%;}
+    .body-overlay svg{width:100%;height:100%;display:block;}
+    .region{
+      fill:transparent;stroke:transparent;stroke-width:3;
+      cursor:pointer;transition:fill .14s ease,stroke .14s ease;
     }
-
-    .body-panel {
-      flex: 1;
-      min-width: 280px;
-      max-width: 380px;
-      border-radius: 0.9rem;
-      border: 1px solid var(--border);
-      background: #ffffff;
-      padding: 0.75rem;
+    .region:hover{fill:var(--region-fill-hover);stroke:var(--region-border);}
+    .region.selected{fill:var(--region-fill-selected);stroke:var(--region-border);}
+    .selected-box{margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--border);}
+    .selected-title{font-size:.82rem;font-weight:500;margin-bottom:.35rem;}
+    .selected-list{display:flex;flex-wrap:wrap;gap:.35rem;min-height:1.4rem;}
+    .selected-pill{
+      padding:.16rem .55rem;border-radius:999px;border:1px solid #d1d5db;
+      background:#f9fafb;font-size:.76rem;color:var(--muted);
     }
-
-    .body-label {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--muted);
-      margin-bottom: 0.25rem;
+    .selected-empty{font-size:.76rem;color:var(--muted);}
+    .actions{margin-top:.65rem;display:flex;justify-content:flex-end;}
+    .btn{
+      padding:.35rem .9rem;border-radius:999px;border:1px solid var(--border);
+      background:#f9fafb;font-size:.75rem;cursor:pointer;color:var(--muted);
     }
-
-    .body-figure {
-      position: relative;
-      width: 100%;
-      padding-bottom: 220%; /* hochkant */
-      overflow: hidden;
-      border-radius: 0.75rem;
-      background: #ffffff;
-    }
-
-    .body-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none; /* nur Overlay klickbar */
-    }
-
-    .body-overlay {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .body-overlay svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .region {
-      fill: transparent;
-      stroke: transparent;
-      stroke-width: 3;
-      cursor: pointer;
-      transition: fill 0.14s ease, stroke 0.14s ease;
-    }
-
-    .region:hover {
-      fill: var(--region-fill-hover);
-      stroke: var(--region-border);
-    }
-
-    .region.selected {
-      fill: var(--region-fill-selected);
-      stroke: var(--region-border);
-    }
-
-    .selected-box {
-      margin-top: 1rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .selected-title {
-      font-size: 0.82rem;
-      font-weight: 500;
-      margin-bottom: 0.35rem;
-    }
-
-    .selected-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.35rem;
-      min-height: 1.4rem;
-    }
-
-    .selected-pill {
-      padding: 0.16rem 0.55rem;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      font-size: 0.76rem;
-      color: var(--muted);
-    }
-
-    .selected-empty {
-      font-size: 0.76rem;
-      color: var(--muted);
-    }
-
-    .actions {
-      margin-top: 0.65rem;
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .btn {
-      padding: 0.35rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #f9fafb;
-      font-size: 0.75rem;
-      cursor: pointer;
-      color: var(--muted);
-    }
-
-    .btn:hover {
-      border-color: #bfdbfe;
-      color: #2563eb;
-    }
-
-    @media (max-width: 768px) {
-      .card { padding: 1.25rem 1.1rem; }
-    }
+    .btn:hover{border-color:#bfdbfe;color:#2563eb;}
+    @media(max-width:768px){.card{padding:1.25rem 1.1rem;}}
   </style>
 </head>
 <body>
@@ -205,12 +89,9 @@
     <div class="card-header">
       <div class="card-title">Physio BodyMap – Muskel-Avatar</div>
       <div class="card-subtitle">
-        Realistische Muskelansicht von Vorder- und Rückseite, mit anklickbaren Regionen zur schnellen Visualisierung von Beschwerden.
+        Vorder- und Rückansicht mit realistischem Muskelbild. Bereiche können markiert werden, um Beschwerden zu visualisieren.
       </div>
-      <p class="hint">
-        <strong>Bedienung:</strong> Klick auf einen Bereich markiert ihn. Nochmals klicken, um die Markierung zu entfernen.
-        Die Auswahl wird lokal im Browser gespeichert.
-      </p>
+      <p class="hint"><strong>Bedienung:</strong> Bereich anklicken = markieren. Nochmals klicken = Markierung entfernen.</p>
     </div>
 
     <div class="bodies">
@@ -218,87 +99,36 @@
       <div class="body-panel">
         <div class="body-label">Vorderseite</div>
         <div class="body-figure">
-          <!-- HINWEIS:
-               Ersetze "muscle-front.png" durch dein eigenes Bild (gleicher Ordner wie index.html).
-               Ideal: hohes Bild, ganzer Körper, Muskelansicht, zentriert. -->
-          <img src="muscle-front.png" alt="Muskelkörper Vorderseite" class="body-img" />
-
-          <!-- Overlay-SVG: Koordinaten beziehen sich auf eine virtuelle Fläche 1000x2000 -->
+          <!-- dein Vorderseiten-Bild -->
+          <img src="667B025A-1E63-4456-9C9F-D389C044D9CD.png" alt="Muskel Vorderseite" class="body-img" />
           <div class="body-overlay">
-            <svg viewBox="0 0 1000 2000" data-side="front">
-              <!-- Hals / obere HWS -->
-              <ellipse id="front-neck" class="region"
-                       cx="500" cy="260" rx="70" ry="60" />
-
-              <!-- oberer Trapez / Schultergürtel -->
+            <svg viewBox="0 0 1000 2000">
+              <!-- Rough Hotspots – musst du ggf. minimal verschieben, bis sie perfekt sitzen -->
+              <ellipse id="front-neck" class="region" cx="500" cy="260" rx="70" ry="60" />
               <path id="front-upper-traps" class="region"
-                    d="M350 260 Q500 200 650 260 Q630 320 580 340 Q500 320 420 340 Q370 320 350 260 Z" />
-
-              <!-- Brust links / rechts -->
-              <ellipse id="front-chest-left" class="region"
-                       cx="430" cy="360" rx="120" ry="100" />
-              <ellipse id="front-chest-right" class="region"
-                       cx="570" cy="360" rx="120" ry="100" />
-
-              <!-- seitliche Rumpfmuskulatur / Obliques -->
-              <ellipse id="front-oblique-left" class="region"
-                       cx="380" cy="480" rx="90" ry="120" />
-              <ellipse id="front-oblique-right" class="region"
-                       cx="620" cy="480" rx="90" ry="120" />
-
-              <!-- gerade Bauchmuskeln: oberes / mittleres / unteres Segment -->
-              <rect id="front-upper-abs" class="region"
-                    x="440" y="430" width="120" height="120" rx="50" />
-              <rect id="front-mid-abs" class="region"
-                    x="440" y="540" width="120" height="130" rx="50" />
-              <rect id="front-lower-abs" class="region"
-                    x="440" y="670" width="120" height="130" rx="50" />
-
-              <!-- Hüfte / Leistenregion -->
-              <ellipse id="front-hip" class="region"
-                       cx="500" cy="820" rx="150" ry="90" />
-
-              <!-- Schultern (Deltoids) -->
-              <ellipse id="front-deltoid-left" class="region"
-                       cx="300" cy="360" rx="80" ry="90" />
-              <ellipse id="front-deltoid-right" class="region"
-                       cx="700" cy="360" rx="80" ry="90" />
-
-              <!-- Bizeps / Oberarme -->
-              <ellipse id="front-upper-arm-left" class="region"
-                       cx="280" cy="520" rx="65" ry="130" />
-              <ellipse id="front-upper-arm-right" class="region"
-                       cx="720" cy="520" rx="65" ry="130" />
-
-              <!-- Unterarme -->
-              <ellipse id="front-forearm-left" class="region"
-                       cx="260" cy="720" rx="55" ry="140" />
-              <ellipse id="front-forearm-right" class="region"
-                       cx="740" cy="720" rx="55" ry="140" />
-
-              <!-- Oberschenkel -->
-              <ellipse id="front-thigh-left" class="region"
-                       cx="430" cy="1050" rx="95" ry="200" />
-              <ellipse id="front-thigh-right" class="region"
-                       cx="570" cy="1050" rx="95" ry="200" />
-
-              <!-- Knie -->
-              <ellipse id="front-knee-left" class="region"
-                       cx="430" cy="1250" rx="70" ry="60" />
-              <ellipse id="front-knee-right" class="region"
-                       cx="570" cy="1250" rx="70" ry="60" />
-
-              <!-- Unterschenkel / Schienbein -->
-              <ellipse id="front-shin-left" class="region"
-                       cx="430" cy="1420" rx="70" ry="170" />
-              <ellipse id="front-shin-right" class="region"
-                       cx="570" cy="1420" rx="70" ry="170" />
-
-              <!-- Füße -->
-              <ellipse id="front-foot-left" class="region"
-                       cx="420" cy="1650" rx="80" ry="60" />
-              <ellipse id="front-foot-right" class="region"
-                       cx="580" cy="1650" rx="80" ry="60" />
+                d="M350 260 Q500 200 650 260 Q630 320 580 340 Q500 320 420 340 Q370 320 350 260 Z" />
+              <ellipse id="front-chest-left" class="region" cx="430" cy="360" rx="120" ry="100" />
+              <ellipse id="front-chest-right" class="region" cx="570" cy="360" rx="120" ry="100" />
+              <ellipse id="front-oblique-left" class="region" cx="380" cy="480" rx="90" ry="120" />
+              <ellipse id="front-oblique-right" class="region" cx="620" cy="480" rx="90" ry="120" />
+              <rect id="front-upper-abs" class="region" x="440" y="430" width="120" height="120" rx="50" />
+              <rect id="front-mid-abs" class="region" x="440" y="540" width="120" height="130" rx="50" />
+              <rect id="front-lower-abs" class="region" x="440" y="670" width="120" height="130" rx="50" />
+              <ellipse id="front-hip" class="region" cx="500" cy="820" rx="150" ry="90" />
+              <ellipse id="front-deltoid-left" class="region" cx="300" cy="360" rx="80" ry="90" />
+              <ellipse id="front-deltoid-right" class="region" cx="700" cy="360" rx="80" ry="90" />
+              <ellipse id="front-upper-arm-left" class="region" cx="280" cy="520" rx="65" ry="130" />
+              <ellipse id="front-upper-arm-right" class="region" cx="720" cy="520" rx="65" ry="130" />
+              <ellipse id="front-forearm-left" class="region" cx="260" cy="720" rx="55" ry="140" />
+              <ellipse id="front-forearm-right" class="region" cx="740" cy="720" rx="55" ry="140" />
+              <ellipse id="front-thigh-left" class="region" cx="430" cy="1050" rx="95" ry="200" />
+              <ellipse id="front-thigh-right" class="region" cx="570" cy="1050" rx="95" ry="200" />
+              <ellipse id="front-knee-left" class="region" cx="430" cy="1250" rx="70" ry="60" />
+              <ellipse id="front-knee-right" class="region" cx="570" cy="1250" rx="70" ry="60" />
+              <ellipse id="front-shin-left" class="region" cx="430" cy="1420" rx="70" ry="170" />
+              <ellipse id="front-shin-right" class="region" cx="570" cy="1420" rx="70" ry="170" />
+              <ellipse id="front-foot-left" class="region" cx="420" cy="1650" rx="80" ry="60" />
+              <ellipse id="front-foot-right" class="region" cx="580" cy="1650" rx="80" ry="60" />
             </svg>
           </div>
         </div>
@@ -308,80 +138,36 @@
       <div class="body-panel">
         <div class="body-label">Rückseite</div>
         <div class="body-figure">
-          <!-- HINWEIS:
-               Ersetze "muscle-back.png" durch dein eigenes Bild (gleicher Ordner wie index.html). -->
-          <img src="muscle-back.png" alt="Muskelkörper Rückseite" class="body-img" />
-
+          <!-- dein Rückseiten-Bild – gleiches File laut deiner Angabe -->
+          <img src="667B025A-1E63-4456-9C9F-D389C044D9CD.png" alt="Muskel Rückseite" class="body-img" />
           <div class="body-overlay">
-            <svg viewBox="0 0 1000 2000" data-side="back">
-              <!-- Nacken -->
-              <ellipse id="back-neck" class="region"
-                       cx="500" cy="260" rx="70" ry="60" />
-
-              <!-- oberer Rücken / Trapez -->
+            <svg viewBox="0 0 1000 2000">
+              <ellipse id="back-neck" class="region" cx="500" cy="260" rx="70" ry="60" />
               <path id="back-upper-back" class="region"
-                    d="M340 270 Q500 190 660 270 Q640 340 600 380 Q500 360 400 380 Q360 340 340 270 Z" />
-
-              <!-- mittlerer Rücken / Schulterblätter / Lat -->
-              <ellipse id="back-mid-back" class="region"
-                       cx="500" cy="420" rx="170" ry="130" />
-
-              <!-- unterer Rücken / LWS -->
-              <ellipse id="back-lower-back" class="region"
-                       cx="500" cy="560" rx="150" ry="110" />
-
-              <!-- Gesäß -->
-              <ellipse id="back-glutes" class="region"
-                       cx="500" cy="720" rx="170" ry="120" />
-
-              <!-- hintere Schultern -->
-              <ellipse id="back-deltoid-left" class="region"
-                       cx="300" cy="360" rx="80" ry="90" />
-              <ellipse id="back-deltoid-right" class="region"
-                       cx="700" cy="360" rx="80" ry="90" />
-
-              <!-- Trizeps / Oberarme hinten -->
-              <ellipse id="back-upper-arm-left" class="region"
-                       cx="280" cy="520" rx="65" ry="130" />
-              <ellipse id="back-upper-arm-right" class="region"
-                       cx="720" cy="520" rx="65" ry="130" />
-
-              <!-- Unterarme hinten -->
-              <ellipse id="back-forearm-left" class="region"
-                       cx="260" cy="720" rx="55" ry="140" />
-              <ellipse id="back-forearm-right" class="region"
-                       cx="740" cy="720" rx="55" ry="140" />
-
-              <!-- Oberschenkel hinten / Hamstrings -->
-              <ellipse id="back-hamstring-left" class="region"
-                       cx="430" cy="1050" rx="95" ry="200" />
-              <ellipse id="back-hamstring-right" class="region"
-                       cx="570" cy="1050" rx="95" ry="200" />
-
-              <!-- Knie hinten -->
-              <ellipse id="back-knee-left" class="region"
-                       cx="430" cy="1250" rx="70" ry="60" />
-              <ellipse id="back-knee-right" class="region"
-                       cx="570" cy="1250" rx="70" ry="60" />
-
-              <!-- Waden / Gastrocnemius -->
-              <ellipse id="back-calf-left" class="region"
-                       cx="430" cy="1420" rx="70" ry="170" />
-              <ellipse id="back-calf-right" class="region"
-                       cx="570" cy="1420" rx="70" ry="170" />
-
-              <!-- Fersen / Fußsohle -->
-              <ellipse id="back-foot-left" class="region"
-                       cx="420" cy="1650" rx="80" ry="60" />
-              <ellipse id="back-foot-right" class="region"
-                       cx="580" cy="1650" rx="80" ry="60" />
+                d="M340 270 Q500 190 660 270 Q640 340 600 380 Q500 360 400 380 Q360 340 340 270 Z" />
+              <ellipse id="back-mid-back" class="region" cx="500" cy="420" rx="170" ry="130" />
+              <ellipse id="back-lower-back" class="region" cx="500" cy="560" rx="150" ry="110" />
+              <ellipse id="back-glutes" class="region" cx="500" cy="720" rx="170" ry="120" />
+              <ellipse id="back-deltoid-left" class="region" cx="300" cy="360" rx="80" ry="90" />
+              <ellipse id="back-deltoid-right" class="region" cx="700" cy="360" rx="80" ry="90" />
+              <ellipse id="back-upper-arm-left" class="region" cx="280" cy="520" rx="65" ry="130" />
+              <ellipse id="back-upper-arm-right" class="region" cx="720" cy="520" rx="65" ry="130" />
+              <ellipse id="back-forearm-left" class="region" cx="260" cy="720" rx="55" ry="140" />
+              <ellipse id="back-forearm-right" class="region" cx="740" cy="720" rx="55" ry="140" />
+              <ellipse id="back-hamstring-left" class="region" cx="430" cy="1050" rx="95" ry="200" />
+              <ellipse id="back-hamstring-right" class="region" cx="570" cy="1050" rx="95" ry="200" />
+              <ellipse id="back-knee-left" class="region" cx="430" cy="1250" rx="70" ry="60" />
+              <ellipse id="back-knee-right" class="region" cx="570" cy="1250" rx="70" ry="60" />
+              <ellipse id="back-calf-left" class="region" cx="430" cy="1420" rx="70" ry="170" />
+              <ellipse id="back-calf-right" class="region" cx="570" cy="1420" rx="70" ry="170" />
+              <ellipse id="back-foot-left" class="region" cx="420" cy="1650" rx="80" ry="60" />
+              <ellipse id="back-foot-right" class="region" cx="580" cy="1650" rx="80" ry="60" />
             </svg>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Übersicht der Auswahl -->
     <div class="selected-box">
       <div class="selected-title">Ausgewählte Muskelbereiche</div>
       <div id="selectedList" class="selected-list"></div>
@@ -392,148 +178,122 @@
   </div>
 
   <script>
-    // ---------- Konfiguration ----------
     const STORAGE_KEY = "physio_bodymap_regions_v1";
-
     const REGION_IDS = [
       "front-neck","front-upper-traps","front-chest-left","front-chest-right",
-      "front-oblique-left","front-oblique-right",
-      "front-upper-abs","front-mid-abs","front-lower-abs",
-      "front-hip",
-      "front-deltoid-left","front-deltoid-right",
-      "front-upper-arm-left","front-upper-arm-right",
-      "front-forearm-left","front-forearm-right",
-      "front-thigh-left","front-thigh-right",
-      "front-knee-left","front-knee-right",
-      "front-shin-left","front-shin-right",
-      "front-foot-left","front-foot-right",
+      "front-oblique-left","front-oblique-right","front-upper-abs","front-mid-abs","front-lower-abs",
+      "front-hip","front-deltoid-left","front-deltoid-right","front-upper-arm-left","front-upper-arm-right",
+      "front-forearm-left","front-forearm-right","front-thigh-left","front-thigh-right",
+      "front-knee-left","front-knee-right","front-shin-left","front-shin-right","front-foot-left","front-foot-right",
       "back-neck","back-upper-back","back-mid-back","back-lower-back","back-glutes",
-      "back-deltoid-left","back-deltoid-right",
-      "back-upper-arm-left","back-upper-arm-right",
-      "back-forearm-left","back-forearm-right",
-      "back-hamstring-left","back-hamstring-right",
-      "back-knee-left","back-knee-right",
-      "back-calf-left","back-calf-right",
-      "back-foot-left","back-foot-right"
+      "back-deltoid-left","back-deltoid-right","back-upper-arm-left","back-upper-arm-right",
+      "back-forearm-left","back-forearm-right","back-hamstring-left","back-hamstring-right",
+      "back-knee-left","back-knee-right","back-calf-left","back-calf-right","back-foot-left","back-foot-right"
     ];
 
-    function regionLabel(id) {
-      switch (id) {
-        // Front
-        case "front-neck": return "Hals vorne";
-        case "front-upper-traps": return "oberer Trapez / Schultergürtel";
-        case "front-chest-left": return "Brust links";
-        case "front-chest-right": return "Brust rechts";
-        case "front-oblique-left": return "seitliche Rumpfmuskeln links (Obliques)";
-        case "front-oblique-right": return "seitliche Rumpfmuskeln rechts (Obliques)";
-        case "front-upper-abs": return "Bauchmuskeln oben";
-        case "front-mid-abs": return "Bauchmuskeln Mitte";
-        case "front-lower-abs": return "Bauchmuskeln unten";
-        case "front-hip": return "Becken / Leistenregion";
-        case "front-deltoid-left": return "Schulterkappe links (Deltoid)";
-        case "front-deltoid-right": return "Schulterkappe rechts (Deltoid)";
-        case "front-upper-arm-left": return "Oberarm vorne links (Bizeps)";
-        case "front-upper-arm-right": return "Oberarm vorne rechts (Bizeps)";
-        case "front-forearm-left": return "Unterarm vorne links";
-        case "front-forearm-right": return "Unterarm vorne rechts";
-        case "front-thigh-left": return "Oberschenkel vorne links";
-        case "front-thigh-right": return "Oberschenkel vorne rechts";
-        case "front-knee-left": return "Knie vorne links";
-        case "front-knee-right": return "Knie vorne rechts";
-        case "front-shin-left": return "Unterschenkel vorne links";
-        case "front-shin-right": return "Unterschenkel vorne rechts";
-        case "front-foot-left": return "Fuß vorne links";
-        case "front-foot-right": return "Fuß vorne rechts";
-
-        // Back
-        case "back-neck": return "Nacken hinten";
-        case "back-upper-back": return "oberer Rücken (Trapez)";
-        case "back-mid-back": return "mittlerer Rücken / Schulterblätter";
-        case "back-lower-back": return "unterer Rücken (LWS)";
-        case "back-glutes": return "Gesäßmuskulatur";
-        case "back-deltoid-left": return "Schulter hinten links";
-        case "back-deltoid-right": return "Schulter hinten rechts";
-        case "back-upper-arm-left": return "Oberarm hinten links (Trizeps)";
-        case "back-upper-arm-right": return "Oberarm hinten rechts (Trizeps)";
-        case "back-forearm-left": return "Unterarm hinten links";
-        case "back-forearm-right": return "Unterarm hinten rechts";
-        case "back-hamstring-left": return "Oberschenkel hinten links (Hamstrings)";
-        case "back-hamstring-right": return "Oberschenkel hinten rechts (Hamstrings)";
-        case "back-knee-left": return "Knie hinten links";
-        case "back-knee-right": return "Knie hinten rechts";
-        case "back-calf-left": return "Wade links";
-        case "back-calf-right": return "Wade rechts";
-        case "back-foot-left": return "Fuß hinten links";
-        case "back-foot-right": return "Fuß hinten rechts";
-        default: return id;
-      }
+    function regionLabel(id){
+      const map={
+        "front-neck":"Hals vorne",
+        "front-upper-traps":"oberer Trapez / Schultergürtel",
+        "front-chest-left":"Brust links",
+        "front-chest-right":"Brust rechts",
+        "front-oblique-left":"seitliche Rumpfmuskeln links",
+        "front-oblique-right":"seitliche Rumpfmuskeln rechts",
+        "front-upper-abs":"Bauch oben",
+        "front-mid-abs":"Bauch Mitte",
+        "front-lower-abs":"Bauch unten",
+        "front-hip":"Becken / Leiste",
+        "front-deltoid-left":"Schulterkappe links",
+        "front-deltoid-right":"Schulterkappe rechts",
+        "front-upper-arm-left":"Oberarm vorne links",
+        "front-upper-arm-right":"Oberarm vorne rechts",
+        "front-forearm-left":"Unterarm vorne links",
+        "front-forearm-right":"Unterarm vorne rechts",
+        "front-thigh-left":"Oberschenkel vorne links",
+        "front-thigh-right":"Oberschenkel vorne rechts",
+        "front-knee-left":"Knie vorne links",
+        "front-knee-right":"Knie vorne rechts",
+        "front-shin-left":"Unterschenkel vorne links",
+        "front-shin-right":"Unterschenkel vorne rechts",
+        "front-foot-left":"Fuß vorne links",
+        "front-foot-right":"Fuß vorne rechts",
+        "back-neck":"Nacken hinten",
+        "back-upper-back":"oberer Rücken",
+        "back-mid-back":"mittlerer Rücken",
+        "back-lower-back":"unterer Rücken",
+        "back-glutes":"Gesäß",
+        "back-deltoid-left":"Schulter hinten links",
+        "back-deltoid-right":"Schulter hinten rechts",
+        "back-upper-arm-left":"Oberarm hinten links",
+        "back-upper-arm-right":"Oberarm hinten rechts",
+        "back-forearm-left":"Unterarm hinten links",
+        "back-forearm-right":"Unterarm hinten rechts",
+        "back-hamstring-left":"Oberschenkel hinten links",
+        "back-hamstring-right":"Oberschenkel hinten rechts",
+        "back-knee-left":"Knie hinten links",
+        "back-knee-right":"Knie hinten rechts",
+        "back-calf-left":"Wade links",
+        "back-calf-right":"Wade rechts",
+        "back-foot-left":"Fuß hinten links",
+        "back-foot-right":"Fuß hinten rechts"
+      };
+      return map[id] || id;
     }
 
-    // ---------- State ----------
-    let selectedRegions = [];
-
-    function loadSelections() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          selectedRegions = parsed.filter(id => REGION_IDS.includes(id));
+    let selectedRegions=[];
+    function loadSelections(){
+      try{
+        const raw=localStorage.getItem(STORAGE_KEY);
+        if(!raw)return;
+        const parsed=JSON.parse(raw);
+        if(Array.isArray(parsed)){
+          selectedRegions=parsed.filter(id=>REGION_IDS.includes(id));
         }
-      } catch (e) {
-        console.error("Fehler beim Laden der Auswahl:", e);
-      }
+      }catch(e){console.error(e);}
+    }
+    function saveSelections(){
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(selectedRegions));
     }
 
-    function saveSelections() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedRegions));
-    }
+    const selectedListEl=document.getElementById("selectedList");
+    const clearBtn=document.getElementById("clearBtn");
 
-    // ---------- DOM ----------
-    const selectedListEl = document.getElementById("selectedList");
-    const clearBtn = document.getElementById("clearBtn");
-
-    function renderSelectedList() {
-      selectedListEl.innerHTML = "";
-      if (selectedRegions.length === 0) {
-        const span = document.createElement("span");
-        span.className = "selected-empty";
-        span.textContent = "Keine Muskelbereiche ausgewählt.";
+    function renderSelectedList(){
+      selectedListEl.innerHTML="";
+      if(selectedRegions.length===0){
+        const span=document.createElement("span");
+        span.className="selected-empty";
+        span.textContent="Keine Muskelbereiche ausgewählt.";
         selectedListEl.appendChild(span);
         return;
       }
-      selectedRegions.forEach(id => {
-        const pill = document.createElement("span");
-        pill.className = "selected-pill";
-        pill.textContent = regionLabel(id);
+      selectedRegions.forEach(id=>{
+        const pill=document.createElement("span");
+        pill.className="selected-pill";
+        pill.textContent=regionLabel(id);
         selectedListEl.appendChild(pill);
       });
     }
 
-    function applySelectionToSVG() {
-      REGION_IDS.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (selectedRegions.includes(id)) {
-          el.classList.add("selected");
-        } else {
-          el.classList.remove("selected");
-        }
+    function applySelectionToSVG(){
+      REGION_IDS.forEach(id=>{
+        const el=document.getElementById(id);
+        if(!el)return;
+        if(selectedRegions.includes(id)) el.classList.add("selected");
+        else el.classList.remove("selected");
       });
     }
 
-    const changeCallbacks = [];
-    function notifyChange() {
-      const snapshot = [...selectedRegions];
-      changeCallbacks.forEach(fn => {
-        try { fn(snapshot); } catch (e) { console.error(e); }
-      });
+    const changeCallbacks=[];
+    function notifyChange(){
+      const snapshot=[...selectedRegions];
+      changeCallbacks.forEach(fn=>{try{fn(snapshot);}catch(e){console.error(e);}});
     }
 
-    function toggleRegion(id) {
-      if (selectedRegions.includes(id)) {
-        selectedRegions = selectedRegions.filter(r => r !== id);
-      } else {
+    function toggleRegion(id){
+      if(selectedRegions.includes(id)){
+        selectedRegions=selectedRegions.filter(r=>r!==id);
+      }else{
         selectedRegions.push(id);
       }
       applySelectionToSVG();
@@ -542,48 +302,33 @@
       notifyChange();
     }
 
-    REGION_IDS.forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.addEventListener("click", () => toggleRegion(id));
+    REGION_IDS.forEach(id=>{
+      const el=document.getElementById(id);
+      if(!el)return;
+      el.addEventListener("click",()=>toggleRegion(id));
     });
 
-    clearBtn.addEventListener("click", () => {
-      selectedRegions = [];
+    clearBtn.addEventListener("click",()=>{
+      selectedRegions=[];
       applySelectionToSVG();
       renderSelectedList();
       saveSelections();
       notifyChange();
     });
 
-    // ---------- Public API ----------
-    window.PhysioBodyMap = {
-      getSelections() {
-        return [...selectedRegions];
+    window.PhysioBodyMap={
+      getSelections(){return[...selectedRegions];},
+      setSelections(ids){
+        selectedRegions=(ids||[]).filter(id=>REGION_IDS.includes(id));
+        applySelectionToSVG();renderSelectedList();saveSelections();notifyChange();
       },
-      setSelections(ids) {
-        selectedRegions = (ids || []).filter(id => REGION_IDS.includes(id));
-        applySelectionToSVG();
-        renderSelectedList();
-        saveSelections();
-        notifyChange();
+      clear(){
+        selectedRegions=[];applySelectionToSVG();renderSelectedList();saveSelections();notifyChange();
       },
-      clear() {
-        selectedRegions = [];
-        applySelectionToSVG();
-        renderSelectedList();
-        saveSelections();
-        notifyChange();
-      },
-      onChange(cb) {
-        if (typeof cb === "function") changeCallbacks.push(cb);
-      },
-      getAllRegionIds() {
-        return [...REGION_IDS];
-      }
+      onChange(cb){if(typeof cb==="function")changeCallbacks.push(cb);},
+      getAllRegionIds(){return[...REGION_IDS];}
     };
 
-    // ---------- Init ----------
     loadSelections();
     applySelectionToSVG();
     renderSelectedList();
