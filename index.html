@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Physio BodyMap – Muskel-Avatar</title>
+  <title>Physio BodyMap – Schmerzpunkte & Notizen</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -11,87 +11,236 @@
       --border: #e5e7eb;
       --text: #111827;
       --muted: #6b7280;
-      --region-border: #2563eb;
-      --region-fill-hover: rgba(96,165,250,0.18);
-      --region-fill-selected: rgba(37,99,235,0.38);
+
+      --pin-fill: rgba(239, 68, 68, 0.28);   /* rot transparent */
+      --pin-stroke: #ef4444;                 /* rot Vollton */
     }
-    *{box-sizing:border-box;}
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      background:var(--bg-page);
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:1.5rem;
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg-page);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
     }
-    .card{
-      width:100%;
-      max-width:1100px;
-      background:var(--bg-card);
-      border-radius:1rem;
-      border:1px solid var(--border);
-      box-shadow:0 20px 25px -5px rgba(15,23,42,.06),0 8px 10px -6px rgba(15,23,42,.04);
-      padding:1.4rem 1.7rem 1.1rem;
+
+    .card {
+      width: 100%;
+      max-width: 1100px;
+      background: var(--bg-card);
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      box-shadow:
+        0 20px 25px -5px rgba(15, 23, 42, 0.06),
+        0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      padding: 1.4rem 1.7rem 1.1rem;
     }
-    .card-header{margin-bottom:.9rem;}
-    .card-title{font-size:1.25rem;font-weight:600;}
-    .card-subtitle{font-size:.9rem;color:var(--muted);margin-top:.15rem;}
-    .hint{font-size:.8rem;color:var(--muted);margin-top:.6rem;}
-    .bodies{
-      display:flex;flex-wrap:wrap;gap:1.25rem;
-      justify-content:center;align-items:flex-start;
+
+    .card-header {
+      margin-bottom: 0.9rem;
     }
-    .body-panel{
-      flex:1;min-width:280px;max-width:380px;
-      border-radius:.9rem;border:1px solid var(--border);
-      background:#fff;padding:.75rem;
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
     }
-    .body-label{font-size:.8rem;font-weight:500;color:var(--muted);margin-bottom:.25rem;}
-    .body-figure{
-      position:relative;width:100%;padding-bottom:220%;
-      overflow:hidden;border-radius:.75rem;background:#fff;
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 0.15rem;
     }
-    .body-img{
-      position:absolute;inset:0;width:100%;height:100%;
-      object-fit:contain;user-select:none;-webkit-user-drag:none;
-      pointer-events:none;
+
+    .hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
     }
-    .body-overlay{position:absolute;inset:0;width:100%;height:100%;}
-    .body-overlay svg{width:100%;height:100%;display:block;}
-    .region{
-      fill:transparent;stroke:transparent;stroke-width:3;
-      cursor:pointer;transition:fill .14s ease,stroke .14s ease;
+
+    .bodies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.25rem;
+      justify-content: center;
+      align-items: flex-start;
     }
-    .region:hover{fill:var(--region-fill-hover);stroke:var(--region-border);}
-    .region.selected{fill:var(--region-fill-selected);stroke:var(--region-border);}
-    .selected-box{margin-top:1rem;padding-top:.75rem;border-top:1px solid var(--border);}
-    .selected-title{font-size:.82rem;font-weight:500;margin-bottom:.35rem;}
-    .selected-list{display:flex;flex-wrap:wrap;gap:.35rem;min-height:1.4rem;}
-    .selected-pill{
-      padding:.16rem .55rem;border-radius:999px;border:1px solid #d1d5db;
-      background:#f9fafb;font-size:.76rem;color:var(--muted);
+
+    .body-panel {
+      flex: 1;
+      min-width: 280px;
+      max-width: 380px;
+      border-radius: 0.9rem;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 0.75rem;
     }
-    .selected-empty{font-size:.76rem;color:var(--muted);}
-    .actions{margin-top:.65rem;display:flex;justify-content:flex-end;}
-    .btn{
-      padding:.35rem .9rem;border-radius:999px;border:1px solid var(--border);
-      background:#f9fafb;font-size:.75rem;cursor:pointer;color:var(--muted);
+
+    .body-label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
     }
-    .btn:hover{border-color:#bfdbfe;color:#2563eb;}
-    @media(max-width:768px){.card{padding:1.25rem 1.1rem;}}
+
+    .body-figure {
+      position: relative;
+      width: 100%;
+      padding-bottom: 220%; /* hochkant Figur */
+      overflow: hidden;
+      border-radius: 0.75rem;
+      background: #ffffff;
+    }
+
+    .body-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none; /* nur Overlay klickbar */
+    }
+
+    .body-overlay {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .body-overlay svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .pin {
+      fill: var(--pin-fill);
+      stroke: var(--pin-stroke);
+      stroke-width: 4;
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    .pin:hover {
+      transform: scale(1.06);
+    }
+
+    .selected-box {
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .selected-title {
+      font-size: 0.82rem;
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+    }
+
+    .notes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .note-item {
+      font-size: 0.78rem;
+      padding: 0.35rem 0.55rem;
+      border-radius: 0.5rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .note-meta {
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 0.1rem;
+    }
+
+    .note-text {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .note-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .note-button {
+      border: none;
+      background: transparent;
+      color: #6b7280;
+      font-size: 0.72rem;
+      padding: 0;
+      cursor: pointer;
+      text-align: right;
+    }
+
+    .note-button:hover {
+      color: #dc2626;
+    }
+
+    .selected-empty {
+      font-size: 0.76rem;
+      color: var(--muted);
+    }
+
+    .actions {
+      margin-top: 0.65rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .btn:hover {
+      border-color: #bfdbfe;
+      color: #2563eb;
+    }
+
+    @media (max-width: 768px) {
+      .card {
+        padding: 1.25rem 1.1rem;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="card-header">
-      <div class="card-title">Physio BodyMap – Muskel-Avatar</div>
+      <div class="card-title">Physio BodyMap – Schmerzpunkte & Notizen</div>
       <div class="card-subtitle">
-        Vorder- und Rückansicht mit realistischem Muskelbild. Bereiche können markiert werden, um Beschwerden zu visualisieren.
+        Realistische Muskelansicht mit frei platzierbaren roten Markierungen und Notizen.
       </div>
-      <p class="hint"><strong>Bedienung:</strong> Bereich anklicken = markieren. Nochmals klicken = Markierung entfernen.</p>
+      <p class="hint">
+        <strong>Bedienung:</strong> Klick auf den Körper setzt einen roten Kreis.
+        Danach kannst du eine Notiz eingeben. Klick auf einen Kreis, um die Notiz zu bearbeiten oder den Punkt zu löschen.
+      </p>
     </div>
 
     <div class="bodies">
@@ -99,36 +248,15 @@
       <div class="body-panel">
         <div class="body-label">Vorderseite</div>
         <div class="body-figure">
-          <!-- dein Vorderseiten-Bild -->
-          <img src="667B025A-1E63-4456-9C9F-D389C044D9CD.png" alt="Muskel Vorderseite" class="body-img" />
+          <img
+            src="0CF43E39-F38F-4845-ABD0-E50B344B063C.png"
+            alt="Muskelkörper Vorderseite"
+            class="body-img"
+          />
           <div class="body-overlay">
-            <svg viewBox="0 0 1000 2000">
-              <!-- Rough Hotspots – musst du ggf. minimal verschieben, bis sie perfekt sitzen -->
-              <ellipse id="front-neck" class="region" cx="500" cy="260" rx="70" ry="60" />
-              <path id="front-upper-traps" class="region"
-                d="M350 260 Q500 200 650 260 Q630 320 580 340 Q500 320 420 340 Q370 320 350 260 Z" />
-              <ellipse id="front-chest-left" class="region" cx="430" cy="360" rx="120" ry="100" />
-              <ellipse id="front-chest-right" class="region" cx="570" cy="360" rx="120" ry="100" />
-              <ellipse id="front-oblique-left" class="region" cx="380" cy="480" rx="90" ry="120" />
-              <ellipse id="front-oblique-right" class="region" cx="620" cy="480" rx="90" ry="120" />
-              <rect id="front-upper-abs" class="region" x="440" y="430" width="120" height="120" rx="50" />
-              <rect id="front-mid-abs" class="region" x="440" y="540" width="120" height="130" rx="50" />
-              <rect id="front-lower-abs" class="region" x="440" y="670" width="120" height="130" rx="50" />
-              <ellipse id="front-hip" class="region" cx="500" cy="820" rx="150" ry="90" />
-              <ellipse id="front-deltoid-left" class="region" cx="300" cy="360" rx="80" ry="90" />
-              <ellipse id="front-deltoid-right" class="region" cx="700" cy="360" rx="80" ry="90" />
-              <ellipse id="front-upper-arm-left" class="region" cx="280" cy="520" rx="65" ry="130" />
-              <ellipse id="front-upper-arm-right" class="region" cx="720" cy="520" rx="65" ry="130" />
-              <ellipse id="front-forearm-left" class="region" cx="260" cy="720" rx="55" ry="140" />
-              <ellipse id="front-forearm-right" class="region" cx="740" cy="720" rx="55" ry="140" />
-              <ellipse id="front-thigh-left" class="region" cx="430" cy="1050" rx="95" ry="200" />
-              <ellipse id="front-thigh-right" class="region" cx="570" cy="1050" rx="95" ry="200" />
-              <ellipse id="front-knee-left" class="region" cx="430" cy="1250" rx="70" ry="60" />
-              <ellipse id="front-knee-right" class="region" cx="570" cy="1250" rx="70" ry="60" />
-              <ellipse id="front-shin-left" class="region" cx="430" cy="1420" rx="70" ry="170" />
-              <ellipse id="front-shin-right" class="region" cx="570" cy="1420" rx="70" ry="170" />
-              <ellipse id="front-foot-left" class="region" cx="420" cy="1650" rx="80" ry="60" />
-              <ellipse id="front-foot-right" class="region" cx="580" cy="1650" rx="80" ry="60" />
+            <!-- viewBox: 1000 x 2000 für saubere Prozentrechnung -->
+            <svg viewBox="0 0 1000 2000" data-side="front">
+              <!-- Pins werden per JS eingefügt -->
             </svg>
           </div>
         </div>
@@ -138,30 +266,14 @@
       <div class="body-panel">
         <div class="body-label">Rückseite</div>
         <div class="body-figure">
-          <!-- dein Rückseiten-Bild – gleiches File laut deiner Angabe -->
-          <img src="667B025A-1E63-4456-9C9F-D389C044D9CD.png" alt="Muskel Rückseite" class="body-img" />
+          <img
+            src="667B025A-1E63-4456-9C9F-D389C044D9CD.png"
+            alt="Muskelkörper Rückseite"
+            class="body-img"
+          />
           <div class="body-overlay">
-            <svg viewBox="0 0 1000 2000">
-              <ellipse id="back-neck" class="region" cx="500" cy="260" rx="70" ry="60" />
-              <path id="back-upper-back" class="region"
-                d="M340 270 Q500 190 660 270 Q640 340 600 380 Q500 360 400 380 Q360 340 340 270 Z" />
-              <ellipse id="back-mid-back" class="region" cx="500" cy="420" rx="170" ry="130" />
-              <ellipse id="back-lower-back" class="region" cx="500" cy="560" rx="150" ry="110" />
-              <ellipse id="back-glutes" class="region" cx="500" cy="720" rx="170" ry="120" />
-              <ellipse id="back-deltoid-left" class="region" cx="300" cy="360" rx="80" ry="90" />
-              <ellipse id="back-deltoid-right" class="region" cx="700" cy="360" rx="80" ry="90" />
-              <ellipse id="back-upper-arm-left" class="region" cx="280" cy="520" rx="65" ry="130" />
-              <ellipse id="back-upper-arm-right" class="region" cx="720" cy="520" rx="65" ry="130" />
-              <ellipse id="back-forearm-left" class="region" cx="260" cy="720" rx="55" ry="140" />
-              <ellipse id="back-forearm-right" class="region" cx="740" cy="720" rx="55" ry="140" />
-              <ellipse id="back-hamstring-left" class="region" cx="430" cy="1050" rx="95" ry="200" />
-              <ellipse id="back-hamstring-right" class="region" cx="570" cy="1050" rx="95" ry="200" />
-              <ellipse id="back-knee-left" class="region" cx="430" cy="1250" rx="70" ry="60" />
-              <ellipse id="back-knee-right" class="region" cx="570" cy="1250" rx="70" ry="60" />
-              <ellipse id="back-calf-left" class="region" cx="430" cy="1420" rx="70" ry="170" />
-              <ellipse id="back-calf-right" class="region" cx="570" cy="1420" rx="70" ry="170" />
-              <ellipse id="back-foot-left" class="region" cx="420" cy="1650" rx="80" ry="60" />
-              <ellipse id="back-foot-right" class="region" cx="580" cy="1650" rx="80" ry="60" />
+            <svg viewBox="0 0 1000 2000" data-side="back">
+              <!-- Pins werden per JS eingefügt -->
             </svg>
           </div>
         </div>
@@ -169,169 +281,282 @@
     </div>
 
     <div class="selected-box">
-      <div class="selected-title">Ausgewählte Muskelbereiche</div>
-      <div id="selectedList" class="selected-list"></div>
+      <div class="selected-title">Gespeicherte Markierungen & Notizen</div>
+      <div id="notesList" class="notes-list"></div>
       <div class="actions">
-        <button id="clearBtn" class="btn">Auswahl zurücksetzen</button>
+        <button id="clearBtn" class="btn">Alle Markierungen löschen</button>
       </div>
     </div>
   </div>
 
   <script>
-    const STORAGE_KEY = "physio_bodymap_regions_v1";
-    const REGION_IDS = [
-      "front-neck","front-upper-traps","front-chest-left","front-chest-right",
-      "front-oblique-left","front-oblique-right","front-upper-abs","front-mid-abs","front-lower-abs",
-      "front-hip","front-deltoid-left","front-deltoid-right","front-upper-arm-left","front-upper-arm-right",
-      "front-forearm-left","front-forearm-right","front-thigh-left","front-thigh-right",
-      "front-knee-left","front-knee-right","front-shin-left","front-shin-right","front-foot-left","front-foot-right",
-      "back-neck","back-upper-back","back-mid-back","back-lower-back","back-glutes",
-      "back-deltoid-left","back-deltoid-right","back-upper-arm-left","back-upper-arm-right",
-      "back-forearm-left","back-forearm-right","back-hamstring-left","back-hamstring-right",
-      "back-knee-left","back-knee-right","back-calf-left","back-calf-right","back-foot-left","back-foot-right"
-    ];
+    // ------------------------------
+    // Datenstruktur für Pins
+    // ------------------------------
+    const STORAGE_KEY = "physio_bodymap_pins_v1";
 
-    function regionLabel(id){
-      const map={
-        "front-neck":"Hals vorne",
-        "front-upper-traps":"oberer Trapez / Schultergürtel",
-        "front-chest-left":"Brust links",
-        "front-chest-right":"Brust rechts",
-        "front-oblique-left":"seitliche Rumpfmuskeln links",
-        "front-oblique-right":"seitliche Rumpfmuskeln rechts",
-        "front-upper-abs":"Bauch oben",
-        "front-mid-abs":"Bauch Mitte",
-        "front-lower-abs":"Bauch unten",
-        "front-hip":"Becken / Leiste",
-        "front-deltoid-left":"Schulterkappe links",
-        "front-deltoid-right":"Schulterkappe rechts",
-        "front-upper-arm-left":"Oberarm vorne links",
-        "front-upper-arm-right":"Oberarm vorne rechts",
-        "front-forearm-left":"Unterarm vorne links",
-        "front-forearm-right":"Unterarm vorne rechts",
-        "front-thigh-left":"Oberschenkel vorne links",
-        "front-thigh-right":"Oberschenkel vorne rechts",
-        "front-knee-left":"Knie vorne links",
-        "front-knee-right":"Knie vorne rechts",
-        "front-shin-left":"Unterschenkel vorne links",
-        "front-shin-right":"Unterschenkel vorne rechts",
-        "front-foot-left":"Fuß vorne links",
-        "front-foot-right":"Fuß vorne rechts",
-        "back-neck":"Nacken hinten",
-        "back-upper-back":"oberer Rücken",
-        "back-mid-back":"mittlerer Rücken",
-        "back-lower-back":"unterer Rücken",
-        "back-glutes":"Gesäß",
-        "back-deltoid-left":"Schulter hinten links",
-        "back-deltoid-right":"Schulter hinten rechts",
-        "back-upper-arm-left":"Oberarm hinten links",
-        "back-upper-arm-right":"Oberarm hinten rechts",
-        "back-forearm-left":"Unterarm hinten links",
-        "back-forearm-right":"Unterarm hinten rechts",
-        "back-hamstring-left":"Oberschenkel hinten links",
-        "back-hamstring-right":"Oberschenkel hinten rechts",
-        "back-knee-left":"Knie hinten links",
-        "back-knee-right":"Knie hinten rechts",
-        "back-calf-left":"Wade links",
-        "back-calf-right":"Wade rechts",
-        "back-foot-left":"Fuß hinten links",
-        "back-foot-right":"Fuß hinten rechts"
-      };
-      return map[id] || id;
-    }
+    /**
+     * pin = {
+     *   id: string,
+     *   side: "front" | "back",
+     *   x: number,  // in ViewBox-Koordinaten (0..1000)
+     *   y: number,  // 0..2000
+     *   radius: number,
+     *   note: string
+     * }
+     */
+    let pins = [];
 
-    let selectedRegions=[];
-    function loadSelections(){
-      try{
-        const raw=localStorage.getItem(STORAGE_KEY);
-        if(!raw)return;
-        const parsed=JSON.parse(raw);
-        if(Array.isArray(parsed)){
-          selectedRegions=parsed.filter(id=>REGION_IDS.includes(id));
+    // ------------------------------
+    // Storage
+    // ------------------------------
+    function loadPins() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          pins = parsed;
         }
-      }catch(e){console.error(e);}
-    }
-    function saveSelections(){
-      localStorage.setItem(STORAGE_KEY,JSON.stringify(selectedRegions));
+      } catch (e) {
+        console.error("Fehler beim Laden der Pins:", e);
+      }
     }
 
-    const selectedListEl=document.getElementById("selectedList");
-    const clearBtn=document.getElementById("clearBtn");
+    function savePins() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(pins));
+    }
 
-    function renderSelectedList(){
-      selectedListEl.innerHTML="";
-      if(selectedRegions.length===0){
-        const span=document.createElement("span");
-        span.className="selected-empty";
-        span.textContent="Keine Muskelbereiche ausgewählt.";
-        selectedListEl.appendChild(span);
+    function createId() {
+      return (
+        Math.random().toString(36).slice(2, 8) +
+        "-" +
+        Date.now().toString(36)
+      );
+    }
+
+    // ------------------------------
+    // Rendering der Pins im SVG
+    // ------------------------------
+    function renderPinsForSide(side) {
+      const svg = document.querySelector(`svg[data-side="${side}"]`);
+      if (!svg) return;
+
+      while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+      pins.filter(p => p.side === side).forEach(pin => {
+        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        c.setAttribute("cx", pin.x);
+        c.setAttribute("cy", pin.y);
+        c.setAttribute("r", pin.radius);
+        c.setAttribute("class", "pin");
+        if (pin.note) {
+          c.setAttribute("title", pin.note);
+        }
+        c.dataset.id = pin.id;
+
+        c.addEventListener("click", evt => {
+          evt.stopPropagation(); // verhindert, dass ein neuer Punkt erzeugt wird
+          editOrDeletePin(pin.id);
+        });
+
+        svg.appendChild(c);
+      });
+    }
+
+    function renderAllPins() {
+      renderPinsForSide("front");
+      renderPinsForSide("back");
+    }
+
+    // ------------------------------
+    // Pins hinzufügen / bearbeiten / löschen
+    // ------------------------------
+    function addPin(side, x, y) {
+      const note = prompt("Notiz zu diesem Punkt (z.B. Schmerzbeschreibung):", "");
+      const pin = {
+        id: createId(),
+        side,
+        x,
+        y,
+        radius: 60, // Kreisgröße (anpassbar)
+        note: note ? note.trim() : ""
+      };
+      pins.push(pin);
+      savePins();
+      renderAllPins();
+      renderNotesList();
+      notifyChange();
+    }
+
+    function editOrDeletePin(id) {
+      const pin = pins.find(p => p.id === id);
+      if (!pin) return;
+
+      const choice = prompt(
+        "Notiz bearbeiten oder 'DEL' eingeben, um den Punkt zu löschen:\n\nAktuelle Notiz:\n" + (pin.note || "(keine)"),
+        pin.note || ""
+      );
+
+      if (choice === null) {
+        // Abgebrochen
         return;
       }
-      selectedRegions.forEach(id=>{
-        const pill=document.createElement("span");
-        pill.className="selected-pill";
-        pill.textContent=regionLabel(id);
-        selectedListEl.appendChild(pill);
-      });
-    }
 
-    function applySelectionToSVG(){
-      REGION_IDS.forEach(id=>{
-        const el=document.getElementById(id);
-        if(!el)return;
-        if(selectedRegions.includes(id)) el.classList.add("selected");
-        else el.classList.remove("selected");
-      });
-    }
-
-    const changeCallbacks=[];
-    function notifyChange(){
-      const snapshot=[...selectedRegions];
-      changeCallbacks.forEach(fn=>{try{fn(snapshot);}catch(e){console.error(e);}});
-    }
-
-    function toggleRegion(id){
-      if(selectedRegions.includes(id)){
-        selectedRegions=selectedRegions.filter(r=>r!==id);
-      }else{
-        selectedRegions.push(id);
+      if (choice.trim().toUpperCase() === "DEL") {
+        pins = pins.filter(p => p.id !== id);
+      } else {
+        pin.note = choice.trim();
       }
-      applySelectionToSVG();
-      renderSelectedList();
-      saveSelections();
+
+      savePins();
+      renderAllPins();
+      renderNotesList();
       notifyChange();
     }
 
-    REGION_IDS.forEach(id=>{
-      const el=document.getElementById(id);
-      if(!el)return;
-      el.addEventListener("click",()=>toggleRegion(id));
-    });
-
-    clearBtn.addEventListener("click",()=>{
-      selectedRegions=[];
-      applySelectionToSVG();
-      renderSelectedList();
-      saveSelections();
+    function clearAllPins() {
+      if (!confirm("Alle Markierungen und Notizen wirklich löschen?")) return;
+      pins = [];
+      savePins();
+      renderAllPins();
+      renderNotesList();
       notifyChange();
-    });
+    }
 
-    window.PhysioBodyMap={
-      getSelections(){return[...selectedRegions];},
-      setSelections(ids){
-        selectedRegions=(ids||[]).filter(id=>REGION_IDS.includes(id));
-        applySelectionToSVG();renderSelectedList();saveSelections();notifyChange();
+    // ------------------------------
+    // SVG-Klick-Handling (neuen Kreis setzen)
+    // ------------------------------
+    function setupSvgClickHandlers() {
+      document.querySelectorAll("svg[data-side]").forEach(svg => {
+        svg.addEventListener("click", evt => {
+          const side = svg.dataset.side;
+          const rect = svg.getBoundingClientRect();
+          const x = ((evt.clientX - rect.left) / rect.width) * 1000;
+          const y = ((evt.clientY - rect.top) / rect.height) * 2000;
+          addPin(side, x, y);
+        });
+      });
+    }
+
+    // ------------------------------
+    // Notizliste unten
+    // ------------------------------
+    const notesListEl = document.getElementById("notesList");
+    const clearBtn = document.getElementById("clearBtn");
+
+    function renderNotesList() {
+      notesListEl.innerHTML = "";
+
+      if (pins.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "selected-empty";
+        empty.textContent = "Noch keine Markierungen gesetzt.";
+        notesListEl.appendChild(empty);
+        return;
+      }
+
+      pins.forEach((pin, idx) => {
+        const item = document.createElement("div");
+        item.className = "note-item";
+
+        const content = document.createElement("div");
+        const meta = document.createElement("div");
+        meta.className = "note-meta";
+        meta.textContent = `${idx + 1}. ${pin.side === "front" ? "Vorderseite" : "Rückseite"}`;
+
+        const text = document.createElement("div");
+        text.className = "note-text";
+        text.textContent = pin.note || "(keine Notiz)";
+
+        content.appendChild(meta);
+        content.appendChild(text);
+
+        const actions = document.createElement("div");
+        actions.className = "note-actions";
+
+        const editBtn = document.createElement("button");
+        editBtn.className = "note-button";
+        editBtn.textContent = "Bearbeiten";
+        editBtn.addEventListener("click", () => editOrDeletePin(pin.id));
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "note-button";
+        delBtn.textContent = "Löschen";
+        delBtn.addEventListener("click", () => {
+          pins = pins.filter(p => p.id !== pin.id);
+          savePins();
+          renderAllPins();
+          renderNotesList();
+          notifyChange();
+        });
+
+        actions.appendChild(editBtn);
+        actions.appendChild(delBtn);
+
+        item.appendChild(content);
+        item.appendChild(actions);
+
+        notesListEl.appendChild(item);
+      });
+    }
+
+    clearBtn.addEventListener("click", clearAllPins);
+
+    // ------------------------------
+    // Öffentliche API für später
+    // ------------------------------
+    const changeCallbacks = [];
+
+    function notifyChange() {
+      const snapshot = pins.map(p => ({ ...p }));
+      changeCallbacks.forEach(fn => {
+        try { fn(snapshot); } catch (e) { console.error(e); }
+      });
+    }
+
+    window.PhysioBodyMap = {
+      /** gibt alle Pins zurück */
+      getPins() {
+        return pins.map(p => ({ ...p }));
       },
-      clear(){
-        selectedRegions=[];applySelectionToSVG();renderSelectedList();saveSelections();notifyChange();
+      /** Pins von außen setzen */
+      setPins(newPins) {
+        if (!Array.isArray(newPins)) return;
+        pins = newPins.map(p => ({
+          id: p.id || createId(),
+          side: p.side === "back" ? "back" : "front",
+          x: Number(p.x) || 0,
+          y: Number(p.y) || 0,
+          radius: Number(p.radius) || 60,
+          note: p.note || ""
+        }));
+        savePins();
+        renderAllPins();
+        renderNotesList();
+        notifyChange();
       },
-      onChange(cb){if(typeof cb==="function")changeCallbacks.push(cb);},
-      getAllRegionIds(){return[...REGION_IDS];}
+      /** alles löschen */
+      clear() {
+        pins = [];
+        savePins();
+        renderAllPins();
+        renderNotesList();
+        notifyChange();
+      },
+      /** Listener auf Änderungen */
+      onChange(fn) {
+        if (typeof fn === "function") changeCallbacks.push(fn);
+      }
     };
 
-    loadSelections();
-    applySelectionToSVG();
-    renderSelectedList();
+    // ------------------------------
+    // Init
+    // ------------------------------
+    loadPins();
+    renderAllPins();
+    renderNotesList();
+    setupSvgClickHandlers();
   </script>
 </body>
 </html>
