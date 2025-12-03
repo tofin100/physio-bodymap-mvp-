@@ -2,8 +2,9 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Interaktive Körperkarte – Muskeln</title>
+  <title>Physio BodyMap – Detaillierte Muskelkarte</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <style>
     :root {
       --bg-page: #f3f4f6;
@@ -12,12 +13,14 @@
       --text: #111827;
       --muted: #6b7280;
       --region: #e5e7eb;
-      --region-hover: #cbd5f5;
+      --region-hover: #dbeafe;
       --region-selected: #60a5fa;
       --region-selected-border: #2563eb;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -33,34 +36,35 @@
 
     .card {
       width: 100%;
-      max-width: 960px;
+      max-width: 1100px;
       background: var(--bg-card);
       border-radius: 1rem;
       border: 1px solid var(--border);
       box-shadow:
-        0 20px 25px -5px rgba(15, 23, 42, 0.05),
-        0 8px 10px -6px rgba(15, 23, 42, 0.03);
-      padding: 1.25rem 1.5rem;
+        0 20px 25px -5px rgba(15, 23, 42, 0.06),
+        0 8px 10px -6px rgba(15, 23, 42, 0.04);
+      padding: 1.5rem 1.75rem 1.25rem;
     }
 
     .card-header {
-      margin-bottom: 0.75rem;
+      margin-bottom: 1rem;
     }
 
     .card-title {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 600;
     }
 
     .card-subtitle {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: var(--muted);
+      margin-top: 0.1rem;
     }
 
     .hint {
       font-size: 0.8rem;
       color: var(--muted);
-      margin: 0.6rem 0 0.8rem;
+      margin-top: 0.6rem;
     }
 
     .bodies {
@@ -68,20 +72,22 @@
       flex-wrap: wrap;
       gap: 1.2rem;
       justify-content: center;
+      align-items: flex-start;
     }
 
     .body-panel {
       flex: 1;
-      min-width: 260px;
-      max-width: 360px;
-      border-radius: 0.75rem;
+      min-width: 280px;
+      max-width: 380px;
+      border-radius: 0.9rem;
       border: 1px solid var(--border);
       background: #ffffff;
-      padding: 0.75rem;
+      padding: 0.85rem;
     }
 
     .body-label {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
+      font-weight: 500;
       color: var(--muted);
       margin-bottom: 0.25rem;
     }
@@ -89,7 +95,7 @@
     .body-svg-wrapper {
       position: relative;
       width: 100%;
-      padding-bottom: 200%; /* hochkant */
+      padding-bottom: 220%; /* schlanke, hohe Figur */
     }
 
     .body-svg-wrapper svg {
@@ -100,32 +106,42 @@
       display: block;
     }
 
+    /* Grundstil für anklickbare Regionen */
     .region {
       fill: var(--region);
       cursor: pointer;
-      stroke: #9ca3af;
-      stroke-width: 0.5;
-      transition: fill 0.15s ease, stroke 0.15s ease;
+      stroke: #cbd5e1;
+      stroke-width: 0.6;
+      transition: fill 0.15s ease, stroke 0.15s ease, stroke-width 0.1s ease;
     }
 
+    /* Hover-Effekt */
     .region:hover {
       fill: var(--region-hover);
     }
 
+    /* Ausgewählt */
     .region.selected {
       fill: var(--region-selected);
       stroke: var(--region-selected-border);
-      stroke-width: 1;
+      stroke-width: 1.2;
+    }
+
+    /* Kopf nur Deko, nicht klickbar */
+    .head {
+      fill: #f9fafb;
+      stroke: #cbd5e1;
+      stroke-width: 0.9;
     }
 
     .selected-box {
-      margin-top: 0.9rem;
-      padding-top: 0.75rem;
+      margin-top: 1rem;
+      padding-top: 0.8rem;
       border-top: 1px solid var(--border);
     }
 
     .selected-title {
-      font-size: 0.8rem;
+      font-size: 0.82rem;
       font-weight: 500;
       margin-bottom: 0.35rem;
     }
@@ -134,24 +150,25 @@
       display: flex;
       flex-wrap: wrap;
       gap: 0.35rem;
+      min-height: 1.4rem;
     }
 
     .selected-pill {
       padding: 0.18rem 0.5rem;
       border-radius: 999px;
       border: 1px solid #d1d5db;
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       color: var(--muted);
       background: #f9fafb;
     }
 
     .selected-empty {
-      font-size: 0.75rem;
+      font-size: 0.76rem;
       color: var(--muted);
     }
 
     .actions {
-      margin-top: 0.6rem;
+      margin-top: 0.7rem;
       display: flex;
       justify-content: flex-end;
     }
@@ -167,70 +184,254 @@
     }
 
     .btn:hover {
-      border-color: #cbd5f5;
+      border-color: #bfdbfe;
       color: #2563eb;
     }
 
-    @media (max-width: 720px) {
-      .card { padding: 1rem; }
+    @media (max-width: 768px) {
+      .card {
+        padding: 1.25rem 1.1rem;
+      }
     }
   </style>
 </head>
 <body>
   <div class="card">
+    <!-- Kopfbereich / Titel -->
     <div class="card-header">
-      <div class="card-title">Interaktive Körperkarte – Muskeln</div>
+      <div class="card-title">Physio BodyMap – detaillierte Muskelkarte</div>
       <div class="card-subtitle">
-        Vorder- und Rückansicht des Körpers mit klickbaren Muskelbereichen.
+        Vorder- und Rückansicht des Körpers mit grob anatomischen Muskelbereichen.
+        Jeder Bereich kann einzeln markiert werden.
       </div>
       <p class="hint">
-        Klick auf einen Bereich, um ihn zu markieren. Nochmals klicken, um die Markierung zu entfernen.
+        <strong>Bedienung:</strong> Klick auf einen Muskelbereich, um ihn zu markieren. Nochmals klicken, um die Markierung zu entfernen.
       </p>
     </div>
 
+    <!-- Vorder- und Rückseite -->
     <div class="bodies">
       <!-- Vorderseite -->
       <div class="body-panel">
         <div class="body-label">Vorderseite</div>
         <div class="body-svg-wrapper">
-          <svg viewBox="0 0 100 200">
-            <!-- Kopf (Deko) -->
-            <circle cx="50" cy="20" r="10" fill="#f3f4f6" stroke="#d1d5db" stroke-width="0.7" />
+          <!--
+            ViewBox:
+            - Breite: 120
+            - Höhe: 260
+            Koordinaten sind so gewählt, dass der Körper schlank & mittig steht.
+          -->
+          <svg viewBox="0 0 120 260" aria-label="BodyMap Vorderseite">
+            <!-- Kopf (nur optisch) -->
+            <circle class="head" cx="60" cy="26" r="12" />
 
             <!-- Hals -->
-            <rect id="front-neck" class="region" x="44" y="30" width="12" height="10" rx="3" />
+            <rect id="front-neck" class="region"
+                  x="52" y="38" width="16" height="10" rx="4" />
 
-            <!-- Brust -->
-            <rect id="front-chest" class="region" x="32" y="40" width="36" height="18" rx="10" />
+            <!-- Schlüsselbein-/Trapezbereich oben -->
+            <path id="front-upper-traps" class="region"
+                  d="
+                    M42 40
+                    Q60 32 78 40
+                    L72 48
+                    Q60 44 48 48
+                    Z
+                  " />
 
-            <!-- Oberer Bauch -->
-            <rect id="front-upper-abs" class="region" x="38" y="58" width="24" height="14" rx="6" />
+            <!-- Brust links / rechts -->
+            <path id="front-chest-left" class="region"
+                  d="
+                    M42 48
+                    Q51 46 56 48
+                    Q52 56 50 60
+                    Q44 60 40 56
+                    Z
+                  " />
+            <path id="front-chest-right" class="region"
+                  d="
+                    M64 48
+                    Q69 46 78 48
+                    L80 56
+                    Q76 60 70 60
+                    Q68 56 64 48
+                    Z
+                  " />
 
-            <!-- Unterer Bauch -->
-            <rect id="front-lower-abs" class="region" x="38" y="74" width="24" height="14" rx="6" />
+            <!-- seitliche Rumpfmuskulatur / Obliques links / rechts -->
+            <path id="front-oblique-left" class="region"
+                  d="
+                    M40 56
+                    Q46 60 48 70
+                    Q46 80 42 88
+                    Q36 82 36 70
+                    Q36 60 40 56
+                    Z
+                  " />
+            <path id="front-oblique-right" class="region"
+                  d="
+                    M80 56
+                    Q84 60 84 70
+                    Q84 82 78 88
+                    Q74 80 72 70
+                    Q74 60 80 56
+                    Z
+                  " />
 
-            <!-- Schultern -->
-            <rect id="front-shoulder-left" class="region" x="24" y="40" width="10" height="14" rx="5" />
-            <rect id="front-shoulder-right" class="region" x="66" y="40" width="10" height="14" rx="5" />
+            <!-- obere Bauchmuskeln -->
+            <rect id="front-upper-abs" class="region"
+                  x="52" y="60" width="16" height="14" rx="5" />
 
-            <!-- Oberarme -->
-            <rect id="front-upper-arm-left" class="region" x="22" y="54" width="9" height="24" rx="5" />
-            <rect id="front-upper-arm-right" class="region" x="69" y="54" width="9" height="24" rx="5" />
+            <!-- mittlere Bauchmuskeln -->
+            <rect id="front-mid-abs" class="region"
+                  x="52" y="76" width="16" height="14" rx="5" />
 
-            <!-- Unterarme -->
-            <rect id="front-forearm-left" class="region" x="22" y="80" width="9" height="22" rx="5" />
-            <rect id="front-forearm-right" class="region" x="69" y="80" width="9" height="22" rx="5" />
+            <!-- untere Bauchmuskeln -->
+            <rect id="front-lower-abs" class="region"
+                  x="52" y="92" width="16" height="14" rx="5" />
 
-            <!-- Hüfte/Leiste -->
-            <rect id="front-hip" class="region" x="36" y="90" width="28" height="14" rx="8" />
+            <!-- Becken / Hüfte -->
+            <path id="front-hip" class="region"
+                  d="
+                    M48 104
+                    Q60 112 72 104
+                    Q74 110 74 118
+                    Q60 122 46 118
+                    Q46 110 48 104
+                    Z
+                  " />
 
-            <!-- Oberschenkel -->
-            <rect id="front-thigh-left" class="region" x="36" y="106" width="11" height="30" rx="6" />
-            <rect id="front-thigh-right" class="region" x="53" y="106" width="11" height="30" rx="6" />
+            <!-- Schulterkappen links / rechts -->
+            <path id="front-deltoid-left" class="region"
+                  d="
+                    M30 52
+                    Q36 46 42 48
+                    Q40 56 38 62
+                    Q34 60 30 56
+                    Z
+                  " />
+            <path id="front-deltoid-right" class="region"
+                  d="
+                    M78 48
+                    Q84 46 90 52
+                    Q86 60 82 62
+                    Q80 56 78 48
+                    Z
+                  " />
 
-            <!-- Unterschenkel -->
-            <rect id="front-shin-left" class="region" x="36" y="138" width="11" height="32" rx="6" />
-            <rect id="front-shin-right" class="region" x="53" y="138" width="11" height="32" rx="6" />
+            <!-- Oberarm vorne links / rechts -->
+            <path id="front-upper-arm-left" class="region"
+                  d="
+                    M30 60
+                    Q34 62 36 68
+                    Q38 78 36 88
+                    Q32 90 28 86
+                    Q26 76 26 68
+                    Q28 62 30 60
+                    Z
+                  " />
+            <path id="front-upper-arm-right" class="region"
+                  d="
+                    M84 60
+                    Q86 62 88 68
+                    Q90 76 90 84
+                    Q88 90 84 88
+                    Q80 80 80 70
+                    Q82 62 84 60
+                    Z
+                  " />
+
+            <!-- Unterarm vorne links / rechts -->
+            <path id="front-forearm-left" class="region"
+                  d="
+                    M28 86
+                    Q32 90 34 98
+                    Q36 110 34 120
+                    Q30 122 26 118
+                    Q24 108 24 98
+                    Q26 90 28 86
+                    Z
+                  " />
+            <path id="front-forearm-right" class="region"
+                  d="
+                    M86 86
+                    Q88 90 90 98
+                    Q92 108 92 118
+                    Q88 122 84 120
+                    Q82 110 80 100
+                    Q82 90 86 86
+                    Z
+                  " />
+
+            <!-- Oberschenkel vorne links / rechts -->
+            <path id="front-thigh-left" class="region"
+                  d="
+                    M46 118
+                    Q52 122 54 132
+                    Q56 148 54 164
+                    Q50 170 44 166
+                    Q42 150 42 134
+                    Q44 122 46 118
+                    Z
+                  " />
+            <path id="front-thigh-right" class="region"
+                  d="
+                    M66 118
+                    Q72 122 74 134
+                    Q76 150 74 166
+                    Q68 170 64 164
+                    Q62 148 62 132
+                    Q64 122 66 118
+                    Z
+                  " />
+
+            <!-- Knie links / rechts -->
+            <rect id="front-knee-left" class="region"
+                  x="45" y="164" width="8" height="10" rx="3" />
+            <rect id="front-knee-right" class="region"
+                  x="66" y="164" width="8" height="10" rx="3" />
+
+            <!-- Unterschenkel vorne links / rechts -->
+            <path id="front-shin-left" class="region"
+                  d="
+                    M46 174
+                    Q52 178 52 190
+                    Q52 204 50 216
+                    Q46 220 42 216
+                    Q40 202 40 188
+                    Q42 178 46 174
+                    Z
+                  " />
+            <path id="front-shin-right" class="region"
+                  d="
+                    M67 174
+                    Q72 178 74 188
+                    Q76 202 74 216
+                    Q70 220 66 216
+                    Q64 204 64 190
+                    Q64 178 67 174
+                    Z
+                  " />
+
+            <!-- Füße vorne links / rechts -->
+            <path id="front-foot-left" class="region"
+                  d="
+                    M42 216
+                    Q48 218 52 218
+                    Q52 224 48 228
+                    Q44 230 38 228
+                    Q38 222 42 216
+                    Z
+                  " />
+            <path id="front-foot-right" class="region"
+                  d="
+                    M66 216
+                    Q70 218 76 216
+                    Q80 222 80 228
+                    Q74 230 70 228
+                    Q66 224 66 218
+                    Z
+                  " />
           </svg>
         </div>
       </div>
@@ -239,49 +440,199 @@
       <div class="body-panel">
         <div class="body-label">Rückseite</div>
         <div class="body-svg-wrapper">
-          <svg viewBox="0 0 100 200">
+          <svg viewBox="0 0 120 260" aria-label="BodyMap Rückseite">
             <!-- Kopf (Deko) -->
-            <circle cx="50" cy="20" r="10" fill="#f3f4f6" stroke="#d1d5db" stroke-width="0.7" />
+            <circle class="head" cx="60" cy="26" r="12" />
 
             <!-- Nacken -->
-            <rect id="back-neck" class="region" x="44" y="30" width="12" height="10" rx="3" />
+            <rect id="back-neck" class="region"
+                  x="52" y="38" width="16" height="10" rx="4" />
 
-            <!-- Oberer Rücken -->
-            <rect id="back-upper-back" class="region" x="32" y="40" width="36" height="16" rx="10" />
+            <!-- oberer Rücken / Trapezius -->
+            <path id="back-upper-back" class="region"
+                  d="
+                    M40 40
+                    Q60 30 80 40
+                    Q76 48 72 52
+                    Q60 50 48 52
+                    Q44 48 40 40
+                    Z
+                  " />
 
-            <!-- Mittlerer Rücken -->
-            <rect id="back-mid-back" class="region" x="32" y="58" width="36" height="16" rx="10" />
+            <!-- mittlerer Rücken / Scapula / Lat -->
+            <path id="back-mid-back" class="region"
+                  d="
+                    M44 52
+                    Q60 50 76 52
+                    Q78 64 76 74
+                    Q68 80 60 80
+                    Q52 80 44 74
+                    Q42 64 44 52
+                    Z
+                  " />
 
-            <!-- Unterer Rücken -->
-            <rect id="back-lower-back" class="region" x="36" y="76" width="28" height="14" rx="8" />
-
-            <!-- Schultern -->
-            <rect id="back-shoulder-left" class="region" x="24" y="40" width="10" height="14" rx="5" />
-            <rect id="back-shoulder-right" class="region" x="66" y="40" width="10" height="14" rx="5" />
-
-            <!-- Oberarme -->
-            <rect id="back-upper-arm-left" class="region" x="22" y="54" width="9" height="24" rx="5" />
-            <rect id="back-upper-arm-right" class="region" x="69" y="54" width="9" height="24" rx="5" />
-
-            <!-- Unterarme -->
-            <rect id="back-forearm-left" class="region" x="22" y="80" width="9" height="22" rx="5" />
-            <rect id="back-forearm-right" class="region" x="69" y="80" width="9" height="22" rx="5" />
+            <!-- unterer Rücken / LWS -->
+            <path id="back-lower-back" class="region"
+                  d="
+                    M48 80
+                    Q60 82 72 80
+                    Q74 90 72 98
+                    Q64 102 60 104
+                    Q56 102 48 98
+                    Q46 90 48 80
+                    Z
+                  " />
 
             <!-- Gesäß -->
-            <rect id="back-glutes" class="region" x="36" y="90" width="28" height="16" rx="9" />
+            <path id="back-glutes" class="region"
+                  d="
+                    M46 104
+                    Q52 108 60 110
+                    Q68 108 74 104
+                    Q78 110 78 118
+                    Q70 124 60 126
+                    Q50 124 42 118
+                    Q42 110 46 104
+                    Z
+                  " />
 
-            <!-- Oberschenkel hinten -->
-            <rect id="back-hamstring-left" class="region" x="36" y="108" width="11" height="30" rx="6" />
-            <rect id="back-hamstring-right" class="region" x="53" y="108" width="11" height="30" rx="6" />
+            <!-- hintere Schultern links / rechts -->
+            <path id="back-deltoid-left" class="region"
+                  d="
+                    M30 44
+                    Q36 38 44 40
+                    Q42 48 40 54
+                    Q34 54 30 50
+                    Z
+                  " />
+            <path id="back-deltoid-right" class="region"
+                  d="
+                    M76 40
+                    Q84 38 90 44
+                    Q86 50 82 54
+                    Q78 48 76 40
+                    Z
+                  " />
 
-            <!-- Waden -->
-            <rect id="back-calf-left" class="region" x="36" y="140" width="11" height="30" rx="6" />
-            <rect id="back-calf-right" class="region" x="53" y="140" width="11" height="30" rx="6" />
+            <!-- Oberarm hinten links / rechts -->
+            <path id="back-upper-arm-left" class="region"
+                  d="
+                    M30 52
+                    Q34 56 36 64
+                    Q38 76 36 86
+                    Q32 90 28 86
+                    Q26 76 26 64
+                    Q28 56 30 52
+                    Z
+                  " />
+            <path id="back-upper-arm-right" class="region"
+                  d="
+                    M84 52
+                    Q86 56 88 64
+                    Q90 74 90 84
+                    Q88 90 84 88
+                    Q80 80 80 66
+                    Q82 56 84 52
+                    Z
+                  " />
+
+            <!-- Unterarm hinten links / rechts -->
+            <path id="back-forearm-left" class="region"
+                  d="
+                    M28 86
+                    Q32 90 34 100
+                    Q36 112 34 122
+                    Q30 126 26 122
+                    Q24 110 24 100
+                    Q26 90 28 86
+                    Z
+                  " />
+            <path id="back-forearm-right" class="region"
+                  d="
+                    M86 86
+                    Q88 90 90 100
+                    Q92 112 92 122
+                    Q88 126 84 122
+                    Q82 110 80 100
+                    Q82 90 86 86
+                    Z
+                  " />
+
+            <!-- Oberschenkel hinten links / rechts -->
+            <path id="back-hamstring-left" class="region"
+                  d="
+                    M46 118
+                    Q52 124 54 136
+                    Q56 152 54 168
+                    Q50 174 44 168
+                    Q42 152 42 136
+                    Q44 124 46 118
+                    Z
+                  " />
+            <path id="back-hamstring-right" class="region"
+                  d="
+                    M66 118
+                    Q72 124 74 136
+                    Q76 152 74 168
+                    Q68 174 64 168
+                    Q62 152 62 136
+                    Q64 124 66 118
+                    Z
+                  " />
+
+            <!-- Knie hinten links / rechts -->
+            <rect id="back-knee-left" class="region"
+                  x="45" y="168" width="8" height="10" rx="3" />
+            <rect id="back-knee-right" class="region"
+                  x="66" y="168" width="8" height="10" rx="3" />
+
+            <!-- Waden / Unterschenkel hinten -->
+            <path id="back-calf-left" class="region"
+                  d="
+                    M46 178
+                    Q52 182 52 194
+                    Q52 210 50 222
+                    Q46 226 42 222
+                    Q40 208 40 192
+                    Q42 182 46 178
+                    Z
+                  " />
+            <path id="back-calf-right" class="region"
+                  d="
+                    M67 178
+                    Q72 182 74 192
+                    Q76 208 74 222
+                    Q70 226 66 222
+                    Q64 210 64 194
+                    Q64 182 67 178
+                    Z
+                  " />
+
+            <!-- Fersen / Fußsohle -->
+            <path id="back-foot-left" class="region"
+                  d="
+                    M42 222
+                    Q48 224 52 224
+                    Q52 230 48 234
+                    Q44 236 38 234
+                    Q38 228 42 222
+                    Z
+                  " />
+            <path id="back-foot-right" class="region"
+                  d="
+                    M66 222
+                    Q70 224 76 222
+                    Q80 228 80 234
+                    Q74 236 70 234
+                    Q66 230 66 224
+                    Z
+                  " />
           </svg>
         </div>
       </div>
     </div>
 
+    <!-- Auswahlübersicht -->
     <div class="selected-box">
       <div class="selected-title">Ausgewählte Muskelbereiche</div>
       <div id="selectedList" class="selected-list"></div>
@@ -292,81 +643,147 @@
   </div>
 
   <script>
-    // Alle Regionen
+    // -------------------------------------------------------------
+    // 1) Konfiguration: alle Region-IDs (Front & Back)
+    // -------------------------------------------------------------
     const REGION_IDS = [
-      "front-neck","front-chest","front-upper-abs","front-lower-abs",
-      "front-shoulder-left","front-shoulder-right",
-      "front-upper-arm-left","front-upper-arm-right",
-      "front-forearm-left","front-forearm-right",
-      "front-hip","front-thigh-left","front-thigh-right",
-      "front-shin-left","front-shin-right",
-      "back-neck","back-upper-back","back-mid-back","back-lower-back",
-      "back-shoulder-left","back-shoulder-right",
-      "back-upper-arm-left","back-upper-arm-right",
-      "back-forearm-left","back-forearm-right",
-      "back-glutes","back-hamstring-left","back-hamstring-right",
-      "back-calf-left","back-calf-right"
+      // Vorderseite
+      "front-neck",
+      "front-upper-traps",
+      "front-chest-left",
+      "front-chest-right",
+      "front-oblique-left",
+      "front-oblique-right",
+      "front-upper-abs",
+      "front-mid-abs",
+      "front-lower-abs",
+      "front-hip",
+      "front-deltoid-left",
+      "front-deltoid-right",
+      "front-upper-arm-left",
+      "front-upper-arm-right",
+      "front-forearm-left",
+      "front-forearm-right",
+      "front-thigh-left",
+      "front-thigh-right",
+      "front-knee-left",
+      "front-knee-right",
+      "front-shin-left",
+      "front-shin-right",
+      "front-foot-left",
+      "front-foot-right",
+
+      // Rückseite
+      "back-neck",
+      "back-upper-back",
+      "back-mid-back",
+      "back-lower-back",
+      "back-glutes",
+      "back-deltoid-left",
+      "back-deltoid-right",
+      "back-upper-arm-left",
+      "back-upper-arm-right",
+      "back-forearm-left",
+      "back-forearm-right",
+      "back-hamstring-left",
+      "back-hamstring-right",
+      "back-knee-left",
+      "back-knee-right",
+      "back-calf-left",
+      "back-calf-right",
+      "back-foot-left",
+      "back-foot-right"
     ];
 
-    let selectedRegions = [];
-
+    // -------------------------------------------------------------
+    // 2) Label-Mapping: technische ID -> lesbarer Name
+    // -------------------------------------------------------------
     function regionLabel(id) {
       switch (id) {
+        // Front
         case "front-neck": return "Hals vorne";
-        case "front-chest": return "Brust";
-        case "front-upper-abs": return "Oberer Bauch";
-        case "front-lower-abs": return "Unterer Bauch";
-        case "front-shoulder-left": return "Schulter vorne links";
-        case "front-shoulder-right": return "Schulter vorne rechts";
+        case "front-upper-traps": return "oberer Trapez / Schlüsselbeinbereich";
+        case "front-chest-left": return "Brust links (Pectoralis)";
+        case "front-chest-right": return "Brust rechts (Pectoralis)";
+        case "front-oblique-left": return "seitliche Rumpfmuskulatur links (Obliques)";
+        case "front-oblique-right": return "seitliche Rumpfmuskulatur rechts (Obliques)";
+        case "front-upper-abs": return "Bauchmuskeln oben";
+        case "front-mid-abs": return "Bauchmuskeln Mitte";
+        case "front-lower-abs": return "Bauchmuskeln unten";
+        case "front-hip": return "Becken / Hüfte vorne";
+        case "front-deltoid-left": return "Schulterkappe links (Deltoid)";
+        case "front-deltoid-right": return "Schulterkappe rechts (Deltoid)";
         case "front-upper-arm-left": return "Oberarm vorne links";
         case "front-upper-arm-right": return "Oberarm vorne rechts";
         case "front-forearm-left": return "Unterarm vorne links";
         case "front-forearm-right": return "Unterarm vorne rechts";
-        case "front-hip": return "Hüfte / Leiste";
         case "front-thigh-left": return "Oberschenkel vorne links";
         case "front-thigh-right": return "Oberschenkel vorne rechts";
+        case "front-knee-left": return "Knie vorne links";
+        case "front-knee-right": return "Knie vorne rechts";
         case "front-shin-left": return "Unterschenkel vorne links";
         case "front-shin-right": return "Unterschenkel vorne rechts";
+        case "front-foot-left": return "Fuß vorne links";
+        case "front-foot-right": return "Fuß vorne rechts";
 
+        // Back
         case "back-neck": return "Nacken hinten";
-        case "back-upper-back": return "Oberer Rücken";
-        case "back-mid-back": return "Mittlerer Rücken";
-        case "back-lower-back": return "Unterer Rücken";
-        case "back-shoulder-left": return "Schulter hinten links";
-        case "back-shoulder-right": return "Schulter hinten rechts";
+        case "back-upper-back": return "oberer Rücken (Trapezius)";
+        case "back-mid-back": return "mittlerer Rücken / Schulterblattbereich";
+        case "back-lower-back": return "unterer Rücken / LWS";
+        case "back-glutes": return "Gesäßmuskulatur";
+        case "back-deltoid-left": return "Schulter hinten links";
+        case "back-deltoid-right": return "Schulter hinten rechts";
         case "back-upper-arm-left": return "Oberarm hinten links";
         case "back-upper-arm-right": return "Oberarm hinten rechts";
         case "back-forearm-left": return "Unterarm hinten links";
         case "back-forearm-right": return "Unterarm hinten rechts";
-        case "back-glutes": return "Gesäß";
-        case "back-hamstring-left": return "Oberschenkel hinten links";
-        case "back-hamstring-right": return "Oberschenkel hinten rechts";
+        case "back-hamstring-left": return "Oberschenkel hinten links (Hamstrings)";
+        case "back-hamstring-right": return "Oberschenkel hinten rechts (Hamstrings)";
+        case "back-knee-left": return "Knie hinten links";
+        case "back-knee-right": return "Knie hinten rechts";
         case "back-calf-left": return "Wade links";
         case "back-calf-right": return "Wade rechts";
+        case "back-foot-left": return "Fuß hinten links";
+        case "back-foot-right": return "Fuß hinten rechts";
+
         default: return id;
       }
     }
 
+    // -------------------------------------------------------------
+    // 3) State & DOM-Referenzen
+    // -------------------------------------------------------------
+    let selectedRegions = [];
+
     const selectedListEl = document.getElementById("selectedList");
     const clearBtn = document.getElementById("clearBtn");
 
+    // -------------------------------------------------------------
+    // 4) Rendering der Auswahlliste
+    // -------------------------------------------------------------
     function renderSelectedList() {
       selectedListEl.innerHTML = "";
+
       if (selectedRegions.length === 0) {
         const span = document.createElement("span");
         span.className = "selected-empty";
-        span.textContent = "Keine Bereiche ausgewählt.";
+        span.textContent = "Keine Muskelbereiche ausgewählt.";
         selectedListEl.appendChild(span);
         return;
       }
+
       selectedRegions.forEach(id => {
-        const span = document.createElement("span");
-        span.className = "selected-pill";
-        span.textContent = regionLabel(id);
-        selectedListEl.appendChild(span);
+        const pill = document.createElement("span");
+        pill.className = "selected-pill";
+        pill.textContent = regionLabel(id);
+        selectedListEl.appendChild(pill);
       });
     }
 
+    // -------------------------------------------------------------
+    // 5) Anwendung der Auswahl auf das SVG (Klasse .selected)
+    // -------------------------------------------------------------
     function applySelectionToSVG() {
       REGION_IDS.forEach(id => {
         const el = document.getElementById(id);
@@ -379,46 +796,101 @@
       });
     }
 
+    // -------------------------------------------------------------
+    // 6) Auswahl toggeln
+    // -------------------------------------------------------------
     function toggleRegion(id) {
       if (selectedRegions.includes(id)) {
         selectedRegions = selectedRegions.filter(r => r !== id);
       } else {
         selectedRegions.push(id);
       }
+
       applySelectionToSVG();
       renderSelectedList();
+      notifyChange();
     }
 
-    // Event-Listener für alle Regionen
+    // -------------------------------------------------------------
+    // 7) Events für alle Regionen registrieren
+    // -------------------------------------------------------------
     REGION_IDS.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
       el.addEventListener("click", () => toggleRegion(id));
     });
 
+    // Button "Auswahl zurücksetzen"
     clearBtn.addEventListener("click", () => {
       selectedRegions = [];
       applySelectionToSVG();
       renderSelectedList();
+      notifyChange();
     });
 
-    // Initiales Rendering
-    renderSelectedList();
+    // -------------------------------------------------------------
+    // 8) Externe API (für Einbettung in eure Physio-App)
+    // -------------------------------------------------------------
+    const changeCallbacks = [];
 
-    // Optionale API für spätere Einbindung
+    function notifyChange() {
+      const snapshot = [...selectedRegions];
+      changeCallbacks.forEach(fn => {
+        try { fn(snapshot); } catch (e) { console.error(e); }
+      });
+    }
+
     window.PhysioBodyMap = {
-      getSelections() { return [...selectedRegions]; },
+      /**
+       * Gibt ein Array aller aktuell markierten IDs zurück.
+       * Beispiel: ["front-chest-left", "back-lower-back"]
+       */
+      getSelections() {
+        return [...selectedRegions];
+      },
+
+      /**
+       * Setzt die Auswahl von außen.
+       * Ungültige IDs werden ignoriert.
+       */
       setSelections(ids) {
         selectedRegions = (ids || []).filter(id => REGION_IDS.includes(id));
         applySelectionToSVG();
         renderSelectedList();
+        notifyChange();
       },
+
+      /**
+       * Löscht alle Markierungen.
+       */
       clear() {
         selectedRegions = [];
         applySelectionToSVG();
         renderSelectedList();
+        notifyChange();
+      },
+
+      /**
+       * Registriert einen Callback, der bei jeder Änderung aufgerufen wird.
+       */
+      onChange(callback) {
+        if (typeof callback === "function") {
+          changeCallbacks.push(callback);
+        }
+      },
+
+      /**
+       * Liefert alle verfügbaren Region-IDs (Read-Only).
+       */
+      getAllRegionIds() {
+        return [...REGION_IDS];
       }
     };
+
+    // -------------------------------------------------------------
+    // 9) Initiales Rendering
+    // -------------------------------------------------------------
+    renderSelectedList();
   </script>
 </body>
 </html>
