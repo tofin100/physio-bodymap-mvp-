@@ -2,22 +2,22 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Interaktive Körperkarte – Avatar</title>
+  <title>Interaktive Körperkarte – Muskeln</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg-page: #f9fafb;
+      --bg-page: #f3f4f6;
       --bg-card: #ffffff;
       --border: #e5e7eb;
       --text: #111827;
       --muted: #6b7280;
-      --pin: #2563eb;
-      --pin-border: #1d4ed8;
+      --region: #e5e7eb;
+      --region-hover: #cbd5f5;
+      --region-selected: #60a5fa;
+      --region-selected-border: #2563eb;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
@@ -33,26 +33,22 @@
 
     .card {
       width: 100%;
-      max-width: 1024px;
+      max-width: 960px;
       background: var(--bg-card);
       border-radius: 1rem;
       border: 1px solid var(--border);
       box-shadow:
         0 20px 25px -5px rgba(15, 23, 42, 0.05),
         0 8px 10px -6px rgba(15, 23, 42, 0.03);
-      padding: 1.25rem 1.5rem 1.25rem;
+      padding: 1.25rem 1.5rem;
     }
 
     .card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      gap: 0.75rem;
       margin-bottom: 0.75rem;
     }
 
     .card-title {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       font-weight: 600;
     }
 
@@ -62,302 +58,367 @@
     }
 
     .hint {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       color: var(--muted);
-      margin-bottom: 0.75rem;
+      margin: 0.6rem 0 0.8rem;
     }
 
     .bodies {
       display: flex;
       flex-wrap: wrap;
-      gap: 1rem;
+      gap: 1.2rem;
       justify-content: center;
     }
 
     .body-panel {
-      position: relative;
-      width: min(46%, 360px);
+      flex: 1;
       min-width: 260px;
+      max-width: 360px;
       border-radius: 0.75rem;
       border: 1px solid var(--border);
-      overflow: hidden;
       background: #ffffff;
+      padding: 0.75rem;
     }
 
     .body-label {
-      position: absolute;
-      top: 0.4rem;
-      left: 0.55rem;
-      padding: 0.18rem 0.45rem;
-      border-radius: 999px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      font-size: 0.65rem;
+      font-size: 0.75rem;
       color: var(--muted);
-      z-index: 3;
+      margin-bottom: 0.25rem;
     }
 
-    .body-img-wrapper {
+    .body-svg-wrapper {
       position: relative;
       width: 100%;
-      padding-bottom: 200%; /* Seitenverhältnis: hochkant */
-      background: #ffffff;
+      padding-bottom: 200%; /* hochkant */
     }
 
-    .body-img-wrapper img {
+    .body-svg-wrapper svg {
       position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      pointer-events: none; /* Klicks gehen an das SVG */
-    }
-
-    .body-overlay {
-      position: absolute;
-      inset: 0;
-      cursor: crosshair;
-    }
-
-    svg {
       width: 100%;
       height: 100%;
       display: block;
     }
 
-    .pin {
-      fill: var(--pin);
-      stroke: var(--pin-border);
-      stroke-width: 0.8;
+    .region {
+      fill: var(--region);
       cursor: pointer;
+      stroke: #9ca3af;
+      stroke-width: 0.5;
+      transition: fill 0.15s ease, stroke 0.15s ease;
     }
 
-    .pin:hover {
-      stroke-width: 1.4;
+    .region:hover {
+      fill: var(--region-hover);
     }
 
-    .legend {
-      margin-top: 0.75rem;
+    .region.selected {
+      fill: var(--region-selected);
+      stroke: var(--region-selected-border);
+      stroke-width: 1;
+    }
+
+    .selected-box {
+      margin-top: 0.9rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .selected-title {
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+    }
+
+    .selected-list {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.75rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-      align-items: center;
+      gap: 0.35rem;
     }
 
-    .legend-pin {
-      width: 10px;
-      height: 10px;
+    .selected-pill {
+      padding: 0.18rem 0.5rem;
       border-radius: 999px;
-      background: var(--pin);
-      border: 2px solid var(--pin-border);
-      margin-right: 0.25rem;
+      border: 1px solid #d1d5db;
+      font-size: 0.75rem;
+      color: var(--muted);
+      background: #f9fafb;
+    }
+
+    .selected-empty {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .actions {
+      margin-top: 0.6rem;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: var(--muted);
+    }
+
+    .btn:hover {
+      border-color: #cbd5f5;
+      color: #2563eb;
     }
 
     @media (max-width: 720px) {
-      .card {
-        padding: 1rem;
-      }
-      .body-panel {
-        width: 100%;
-      }
+      .card { padding: 1rem; }
     }
   </style>
 </head>
 <body>
   <div class="card">
     <div class="card-header">
-      <div>
-        <div class="card-title">Interaktive Körperkarte</div>
-        <div class="card-subtitle">
-          Vorder- und Rückansicht mit Muskel-/Skelettdarstellung. Pins markieren Schmerzpunkte oder Befunde.
-        </div>
+      <div class="card-title">Interaktive Körperkarte – Muskeln</div>
+      <div class="card-subtitle">
+        Vorder- und Rückansicht des Körpers mit klickbaren Muskelbereichen.
       </div>
-    </div>
-
-    <div class="hint">
-      <strong>Bedienung:</strong> Klick auf den Körper setzt einen Pin. Klick auf einen Pin entfernt ihn wieder.
+      <p class="hint">
+        Klick auf einen Bereich, um ihn zu markieren. Nochmals klicken, um die Markierung zu entfernen.
+      </p>
     </div>
 
     <div class="bodies">
       <!-- Vorderseite -->
       <div class="body-panel">
         <div class="body-label">Vorderseite</div>
-        <div class="body-img-wrapper">
-          <!-- TODO: Ersetze 'body-front.png' durch dein eigenes Bild -->
-          <img src="body-front.png" alt="Körper Vorderseite – Muskel/Skelett" />
-          <div class="body-overlay">
-            <svg viewBox="0 0 100 200" data-side="front">
-              <!-- Pins werden per JS hier eingefügt -->
-            </svg>
-          </div>
+        <div class="body-svg-wrapper">
+          <svg viewBox="0 0 100 200">
+            <!-- Kopf (Deko) -->
+            <circle cx="50" cy="20" r="10" fill="#f3f4f6" stroke="#d1d5db" stroke-width="0.7" />
+
+            <!-- Hals -->
+            <rect id="front-neck" class="region" x="44" y="30" width="12" height="10" rx="3" />
+
+            <!-- Brust -->
+            <rect id="front-chest" class="region" x="32" y="40" width="36" height="18" rx="10" />
+
+            <!-- Oberer Bauch -->
+            <rect id="front-upper-abs" class="region" x="38" y="58" width="24" height="14" rx="6" />
+
+            <!-- Unterer Bauch -->
+            <rect id="front-lower-abs" class="region" x="38" y="74" width="24" height="14" rx="6" />
+
+            <!-- Schultern -->
+            <rect id="front-shoulder-left" class="region" x="24" y="40" width="10" height="14" rx="5" />
+            <rect id="front-shoulder-right" class="region" x="66" y="40" width="10" height="14" rx="5" />
+
+            <!-- Oberarme -->
+            <rect id="front-upper-arm-left" class="region" x="22" y="54" width="9" height="24" rx="5" />
+            <rect id="front-upper-arm-right" class="region" x="69" y="54" width="9" height="24" rx="5" />
+
+            <!-- Unterarme -->
+            <rect id="front-forearm-left" class="region" x="22" y="80" width="9" height="22" rx="5" />
+            <rect id="front-forearm-right" class="region" x="69" y="80" width="9" height="22" rx="5" />
+
+            <!-- Hüfte/Leiste -->
+            <rect id="front-hip" class="region" x="36" y="90" width="28" height="14" rx="8" />
+
+            <!-- Oberschenkel -->
+            <rect id="front-thigh-left" class="region" x="36" y="106" width="11" height="30" rx="6" />
+            <rect id="front-thigh-right" class="region" x="53" y="106" width="11" height="30" rx="6" />
+
+            <!-- Unterschenkel -->
+            <rect id="front-shin-left" class="region" x="36" y="138" width="11" height="32" rx="6" />
+            <rect id="front-shin-right" class="region" x="53" y="138" width="11" height="32" rx="6" />
+          </svg>
         </div>
       </div>
 
       <!-- Rückseite -->
       <div class="body-panel">
         <div class="body-label">Rückseite</div>
-        <div class="body-img-wrapper">
-          <!-- TODO: Ersetze 'body-back.png' durch dein eigenes Bild -->
-          <img src="body-back.png" alt="Körper Rückseite – Muskel/Skelett" />
-          <div class="body-overlay">
-            <svg viewBox="0 0 100 200" data-side="back">
-              <!-- Pins werden per JS hier eingefügt -->
-            </svg>
-          </div>
+        <div class="body-svg-wrapper">
+          <svg viewBox="0 0 100 200">
+            <!-- Kopf (Deko) -->
+            <circle cx="50" cy="20" r="10" fill="#f3f4f6" stroke="#d1d5db" stroke-width="0.7" />
+
+            <!-- Nacken -->
+            <rect id="back-neck" class="region" x="44" y="30" width="12" height="10" rx="3" />
+
+            <!-- Oberer Rücken -->
+            <rect id="back-upper-back" class="region" x="32" y="40" width="36" height="16" rx="10" />
+
+            <!-- Mittlerer Rücken -->
+            <rect id="back-mid-back" class="region" x="32" y="58" width="36" height="16" rx="10" />
+
+            <!-- Unterer Rücken -->
+            <rect id="back-lower-back" class="region" x="36" y="76" width="28" height="14" rx="8" />
+
+            <!-- Schultern -->
+            <rect id="back-shoulder-left" class="region" x="24" y="40" width="10" height="14" rx="5" />
+            <rect id="back-shoulder-right" class="region" x="66" y="40" width="10" height="14" rx="5" />
+
+            <!-- Oberarme -->
+            <rect id="back-upper-arm-left" class="region" x="22" y="54" width="9" height="24" rx="5" />
+            <rect id="back-upper-arm-right" class="region" x="69" y="54" width="9" height="24" rx="5" />
+
+            <!-- Unterarme -->
+            <rect id="back-forearm-left" class="region" x="22" y="80" width="9" height="22" rx="5" />
+            <rect id="back-forearm-right" class="region" x="69" y="80" width="9" height="22" rx="5" />
+
+            <!-- Gesäß -->
+            <rect id="back-glutes" class="region" x="36" y="90" width="28" height="16" rx="9" />
+
+            <!-- Oberschenkel hinten -->
+            <rect id="back-hamstring-left" class="region" x="36" y="108" width="11" height="30" rx="6" />
+            <rect id="back-hamstring-right" class="region" x="53" y="108" width="11" height="30" rx="6" />
+
+            <!-- Waden -->
+            <rect id="back-calf-left" class="region" x="36" y="140" width="11" height="30" rx="6" />
+            <rect id="back-calf-right" class="region" x="53" y="140" width="11" height="30" rx="6" />
+          </svg>
         </div>
       </div>
     </div>
 
-    <div class="legend">
-      <span><span class="legend-pin"></span>Pin = markierter Punkt</span>
-      <span>• Klick auf Körper = neuen Pin setzen</span>
-      <span>• Klick auf Pin = Pin löschen</span>
+    <div class="selected-box">
+      <div class="selected-title">Ausgewählte Muskelbereiche</div>
+      <div id="selectedList" class="selected-list"></div>
+      <div class="actions">
+        <button id="clearBtn" class="btn">Auswahl zurücksetzen</button>
+      </div>
     </div>
   </div>
 
   <script>
-    // -------------------------------
-    // State: Pins als Prozentwerte
-    // -------------------------------
-    const STORAGE_KEY = "bodymap_pins_v1";
+    // Alle Regionen
+    const REGION_IDS = [
+      "front-neck","front-chest","front-upper-abs","front-lower-abs",
+      "front-shoulder-left","front-shoulder-right",
+      "front-upper-arm-left","front-upper-arm-right",
+      "front-forearm-left","front-forearm-right",
+      "front-hip","front-thigh-left","front-thigh-right",
+      "front-shin-left","front-shin-right",
+      "back-neck","back-upper-back","back-mid-back","back-lower-back",
+      "back-shoulder-left","back-shoulder-right",
+      "back-upper-arm-left","back-upper-arm-right",
+      "back-forearm-left","back-forearm-right",
+      "back-glutes","back-hamstring-left","back-hamstring-right",
+      "back-calf-left","back-calf-right"
+    ];
 
-    let pins = {
-      front: [], // { id, x, y }
-      back: []
-    };
+    let selectedRegions = [];
 
-    function loadPins() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === "object") {
-          pins.front = Array.isArray(parsed.front) ? parsed.front : [];
-          pins.back = Array.isArray(parsed.back) ? parsed.back : [];
+    function regionLabel(id) {
+      switch (id) {
+        case "front-neck": return "Hals vorne";
+        case "front-chest": return "Brust";
+        case "front-upper-abs": return "Oberer Bauch";
+        case "front-lower-abs": return "Unterer Bauch";
+        case "front-shoulder-left": return "Schulter vorne links";
+        case "front-shoulder-right": return "Schulter vorne rechts";
+        case "front-upper-arm-left": return "Oberarm vorne links";
+        case "front-upper-arm-right": return "Oberarm vorne rechts";
+        case "front-forearm-left": return "Unterarm vorne links";
+        case "front-forearm-right": return "Unterarm vorne rechts";
+        case "front-hip": return "Hüfte / Leiste";
+        case "front-thigh-left": return "Oberschenkel vorne links";
+        case "front-thigh-right": return "Oberschenkel vorne rechts";
+        case "front-shin-left": return "Unterschenkel vorne links";
+        case "front-shin-right": return "Unterschenkel vorne rechts";
+
+        case "back-neck": return "Nacken hinten";
+        case "back-upper-back": return "Oberer Rücken";
+        case "back-mid-back": return "Mittlerer Rücken";
+        case "back-lower-back": return "Unterer Rücken";
+        case "back-shoulder-left": return "Schulter hinten links";
+        case "back-shoulder-right": return "Schulter hinten rechts";
+        case "back-upper-arm-left": return "Oberarm hinten links";
+        case "back-upper-arm-right": return "Oberarm hinten rechts";
+        case "back-forearm-left": return "Unterarm hinten links";
+        case "back-forearm-right": return "Unterarm hinten rechts";
+        case "back-glutes": return "Gesäß";
+        case "back-hamstring-left": return "Oberschenkel hinten links";
+        case "back-hamstring-right": return "Oberschenkel hinten rechts";
+        case "back-calf-left": return "Wade links";
+        case "back-calf-right": return "Wade rechts";
+        default: return id;
+      }
+    }
+
+    const selectedListEl = document.getElementById("selectedList");
+    const clearBtn = document.getElementById("clearBtn");
+
+    function renderSelectedList() {
+      selectedListEl.innerHTML = "";
+      if (selectedRegions.length === 0) {
+        const span = document.createElement("span");
+        span.className = "selected-empty";
+        span.textContent = "Keine Bereiche ausgewählt.";
+        selectedListEl.appendChild(span);
+        return;
+      }
+      selectedRegions.forEach(id => {
+        const span = document.createElement("span");
+        span.className = "selected-pill";
+        span.textContent = regionLabel(id);
+        selectedListEl.appendChild(span);
+      });
+    }
+
+    function applySelectionToSVG() {
+      REGION_IDS.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (selectedRegions.includes(id)) {
+          el.classList.add("selected");
+        } else {
+          el.classList.remove("selected");
         }
-      } catch (e) {
-        console.error("Fehler beim Laden der Pins:", e);
-      }
-    }
-
-    function savePins() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(pins));
-    }
-
-    function createId() {
-      return (
-        Math.random().toString(36).slice(2, 8) +
-        "-" +
-        Date.now().toString(36)
-      );
-    }
-
-    // -------------------------------
-    // Rendering
-    // -------------------------------
-    function renderPinsForSide(side) {
-      const svg = document.querySelector(`svg[data-side="${side}"]`);
-      if (!svg) return;
-
-      // Alte Pins entfernen
-      while (svg.firstChild) {
-        svg.removeChild(svg.firstChild);
-      }
-
-      const data = pins[side] || [];
-      data.forEach(pin => {
-        const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        circle.setAttribute("cx", pin.x);
-        circle.setAttribute("cy", pin.y);
-        circle.setAttribute("r", "2.8"); // Radius in ViewBox-Einheiten
-        circle.setAttribute("class", "pin");
-        circle.dataset.id = pin.id;
-        circle.addEventListener("click", evt => {
-          evt.stopPropagation(); // verhindert neuen Pin
-          removePin(side, pin.id);
-        });
-        svg.appendChild(circle);
       });
     }
 
-    function renderAllPins() {
-      renderPinsForSide("front");
-      renderPinsForSide("back");
+    function toggleRegion(id) {
+      if (selectedRegions.includes(id)) {
+        selectedRegions = selectedRegions.filter(r => r !== id);
+      } else {
+        selectedRegions.push(id);
+      }
+      applySelectionToSVG();
+      renderSelectedList();
     }
 
-    // -------------------------------
-    // Pin-Management
-    // -------------------------------
-    function addPin(side, x, y) {
-      const pin = { id: createId(), x, y };
-      pins[side].push(pin);
-      savePins();
-      renderPinsForSide(side);
-    }
+    // Event-Listener für alle Regionen
+    REGION_IDS.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.addEventListener("click", () => toggleRegion(id));
+    });
 
-    function removePin(side, id) {
-      pins[side] = pins[side].filter(p => p.id !== id);
-      savePins();
-      renderPinsForSide(side);
-    }
+    clearBtn.addEventListener("click", () => {
+      selectedRegions = [];
+      applySelectionToSVG();
+      renderSelectedList();
+    });
 
-    // -------------------------------
-    // Klick-Logik
-    // -------------------------------
-    function setupClickHandlers() {
-      document.querySelectorAll("svg[data-side]").forEach(svg => {
-        svg.addEventListener("click", evt => {
-          const side = svg.dataset.side;
-          const rect = svg.getBoundingClientRect();
-          const x = ((evt.clientX - rect.left) / rect.width) * 100;
-          const y = ((evt.clientY - rect.top) / rect.height) * 200; // viewBox height = 200
-          addPin(side, x, y);
-        });
-      });
-    }
+    // Initiales Rendering
+    renderSelectedList();
 
-    // -------------------------------
-    // Öffentliche API (optional)
-    // -------------------------------
-    window.PhysioAvatar = {
-      /**
-       * Gibt eine Kopie der aktuellen Pins zurück:
-       * { front: [{id,x,y}], back: [...] }
-       */
-      getPins() {
-        return {
-          front: [...pins.front],
-          back: [...pins.back]
-        };
+    // Optionale API für spätere Einbindung
+    window.PhysioBodyMap = {
+      getSelections() { return [...selectedRegions]; },
+      setSelections(ids) {
+        selectedRegions = (ids || []).filter(id => REGION_IDS.includes(id));
+        applySelectionToSVG();
+        renderSelectedList();
       },
-      /**
-       * Setzt Pins von außen. Erwartet Format wie getPins().
-       */
-      setPins(newPins) {
-        pins.front = Array.isArray(newPins.front) ? newPins.front : [];
-        pins.back = Array.isArray(newPins.back) ? newPins.back : [];
-        savePins();
-        renderAllPins();
-      },
-      /**
-       * Löscht alle Pins.
-       */
       clear() {
-        pins.front = [];
-        pins.back = [];
-        savePins();
-        renderAllPins();
+        selectedRegions = [];
+        applySelectionToSVG();
+        renderSelectedList();
       }
     };
-
-    // -------------------------------
-    // Init
-    // -------------------------------
-    loadPins();
-    renderAllPins();
-    setupClickHandlers();
   </script>
 </body>
 </html>
