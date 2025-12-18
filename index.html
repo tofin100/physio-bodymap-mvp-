@@ -3,137 +3,647 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kintaro • BodyMap (Front) — SVG Layer Web-App</title>
-  <link rel="stylesheet" href="./styles.css" />
+  <title>Kintaro • Silhouette Voice Agent (Prototype)</title>
+  <style>
+    :root{
+      --bg:#050814;
+      --panel:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.10);
+      --text:#EAF0FF;
+      --muted:#AAB3CF;
+      --gold:#E6C15A;
+      --cyan:#52E6FF;
+      --danger:#FF5C7A;
+
+      --fill: rgba(230,193,90,.55); /* will be overridden by intensity */
+      --shadow: 0 14px 50px rgba(0,0,0,.55);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1000px 650px at 18% 10%, rgba(82,230,255,.12), transparent 55%),
+        radial-gradient(900px 600px at 80% 20%, rgba(230,193,90,.10), transparent 55%),
+        linear-gradient(180deg, #030513, var(--bg));
+      min-height:100vh;
+    }
+
+    .topbar{
+      max-width:1100px;margin:0 auto;
+      padding:16px 16px 10px;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:34px;height:34px;border-radius:12px;
+      background:
+        radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.35), transparent 60%),
+        linear-gradient(135deg, rgba(82,230,255,.35), rgba(230,193,90,.22));
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: 0 0 22px rgba(82,230,255,.12);
+    }
+    .title{
+      font-weight:860;letter-spacing:.25px;font-size:16px;
+      background: linear-gradient(90deg, var(--gold), #fff, var(--cyan));
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .subtitle{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+    .shell{
+      max-width:1100px;margin:0 auto;
+      padding:10px 16px 24px;
+      display:grid;grid-template-columns: 360px 1fr;
+      gap:14px;
+    }
+
+    .card{
+      border-radius:16px;
+      border:1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding:12px 12px 10px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background: linear-gradient(180deg, rgba(82,230,255,.06), rgba(230,193,90,.04));
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    }
+    .cardTitle{font-weight:820;font-size:13px}
+    .cardBody{padding:12px}
+
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .field{display:flex;flex-direction:column;gap:7px;flex:1}
+    label{font-size:12px;color:var(--muted)}
+    input[type="range"]{width:100%}
+
+    .btn{
+      border:none;cursor:pointer;
+      padding:10px 10px;border-radius:12px;
+      font-weight:780;font-size:12.5px;
+      color:var(--text);
+      background: rgba(82,230,255,.13);
+      border:1px solid rgba(82,230,255,.24);
+      transition: transform .05s ease, background .15s ease, border .15s ease;
+    }
+    .btn:hover{background: rgba(82,230,255,.17); border-color: rgba(82,230,255,.34)}
+    .btn:active{transform: translateY(1px)}
+    .btn.ghost{
+      background: rgba(0,0,0,.22);
+      border-color: rgba(255,255,255,.14);
+    }
+    .btn.danger{
+      background: rgba(255,92,122,.14);
+      border-color: rgba(255,92,122,.28);
+    }
+    .btn.small{padding:7px 9px;font-size:12px}
+
+    .chip{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.20);
+      color: rgba(255,255,255,.88);
+      font-size:12px;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background: var(--cyan);
+      box-shadow: 0 0 18px rgba(82,230,255,.35);
+    }
+    .dot.off{background: rgba(255,255,255,.18); box-shadow:none}
+
+    .hint{font-size:12px;color:var(--muted);line-height:1.35;margin-top:8px}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+    .stage{
+      position:relative;
+      min-height: 720px;
+      padding:12px;
+      background:
+        radial-gradient(360px 260px at 50% 18%, rgba(255,255,255,.05), transparent 65%),
+        linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.22));
+    }
+    .stageInner{
+      position:absolute; inset:12px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
+      display:flex;align-items:center;justify-content:center;
+      overflow:hidden;
+    }
+    svg{width:100%;height:100%;display:block}
+
+    /* Regions */
+    .base{fill: rgba(255,255,255,.05); stroke: rgba(255,255,255,.16); stroke-width:2;}
+    .region{
+      fill: rgba(0,0,0,0);
+      stroke: rgba(255,255,255,.06);
+      stroke-width:1.2;
+      cursor:pointer;
+      transition: fill .18s ease, filter .18s ease, opacity .18s ease;
+    }
+    .region:hover{filter: drop-shadow(0 0 10px rgba(82,230,255,.20))}
+    .region.active{fill: var(--fill); filter: drop-shadow(0 0 12px rgba(230,193,90,.28))}
+    .region.dim{opacity:.15}
+    .kbd{
+      font-size:11px;
+      padding:2px 6px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:6px;
+      background: rgba(0,0,0,.18);
+      color: rgba(255,255,255,.88);
+    }
+    .status{
+      padding:10px;border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      font-size:12.5px;color: rgba(255,255,255,.88);
+      line-height:1.35;
+      word-break: break-word;
+    }
+
+    @media (max-width: 980px){
+      .shell{grid-template-columns:1fr}
+      .stage{min-height: 640px}
+    }
+  </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo" aria-hidden="true"></div>
-      <div class="brandText">
-        <div class="title">Kintaro BodyMap</div>
-        <div class="subtitle">Front • SVG-Layer • Klick • Voice (Demo) • Session</div>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"></div>
+    <div>
+      <div class="title">Kintaro • Silhouette Voice Agent</div>
+      <div class="subtitle">Sag <span class="mono">„Anzeige …“</span> + Körperteil → Region wird eingefärbt</div>
+    </div>
+  </div>
+  <div class="chip" id="chipMic">
+    <span class="dot off" id="micDot"></span>
+    <span id="micLabel">Mic: Aus</span>
+  </div>
+</header>
+
+<main class="shell">
+  <aside class="card">
+    <div class="cardHead">
+      <div class="cardTitle">Agent Controls</div>
+      <button class="btn danger small" id="btnReset">Reset</button>
+    </div>
+    <div class="cardBody">
+      <div class="row" style="margin-bottom:10px;">
+        <button class="btn" id="btnMic">🎙️ Start Listening</button>
+        <button class="btn ghost" id="btnStop">Stop</button>
+      </div>
+
+      <div class="field">
+        <label>Intensität</label>
+        <input type="range" min="1" max="10" value="6" id="rngIntensity" />
+        <div class="hint">Steuert die Deckkraft der Einfärbung.</div>
+      </div>
+
+      <div class="hint" style="margin-top:12px">
+        <b>Kommandos (Beispiele):</b><br>
+        <span class="mono">Anzeige Kopf</span> • <span class="mono">Anzeige Hand rechts</span> • <span class="mono">Anzeige Bein links</span><br>
+        <span class="mono">Reset</span> • <span class="mono">Alles aus</span> • <span class="mono">Intensität 8</span>
+      </div>
+
+      <div class="hint" style="margin-top:10px">
+        Tipp: Du kannst auch klicken: Kopf/Arme/Hände/Beine/Füße.
+      </div>
+
+      <div style="margin-top:12px" class="status" id="status">
+        Status: Bereit. (Chrome/Edge empfohlen für Speech Recognition)
+        <div class="hint" style="margin-top:8px">
+          Quickkeys: <span class="kbd">Esc</span> Reset • <span class="kbd">Space</span> Mic an/aus
+        </div>
       </div>
     </div>
+  </aside>
 
-    <div class="right">
-      <div class="chip"><span class="dot"></span><span>Prototype • GitHub-ready</span></div>
-      <a class="btn ghost" href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+  <section class="card">
+    <div class="cardHead">
+      <div class="cardTitle">Silhouette • Front</div>
+      <div class="row">
+        <span class="chip"><span class="dot"></span><span>Click-to-highlight</span></span>
+      </div>
     </div>
-  </header>
-
-  <main class="shell">
-    <aside class="panel">
-      <div class="panelHead">
-        <div class="panelTitle">Controls</div>
-        <button class="btn danger small" id="btnReset">Reset</button>
+    <div class="stage">
+      <div class="stageInner">
+        <div id="svgHost"></div>
       </div>
+    </div>
+  </section>
+</main>
 
-      <section class="block">
-        <div class="blockTitle">Layer</div>
-        <div class="toggles">
-          <label class="toggle"><input type="checkbox" id="togSil" checked><span>Silhouette</span></label>
-          <label class="toggle"><input type="checkbox" id="togBones" checked><span>Knochen</span></label>
-          <label class="toggle"><input type="checkbox" id="togMuscles" checked><span>Muskeln</span></label>
-          <label class="toggle"><input type="checkbox" id="togNerves"><span>Nerven</span></label>
-          <label class="toggle"><input type="checkbox" id="togMarkers" checked><span>Marker</span></label>
-        </div>
+<script>
+  // ---------------------------
+  // SVG silhouette with regions
+  // ---------------------------
+  const svgHost = document.getElementById("svgHost");
 
-        <div class="row gap">
-          <div class="field">
-            <label>Isolate</label>
-            <select id="selIsolate">
-              <option value="mix">Mix (Premium Dim)</option>
-              <option value="muscles">Nur Muskeln</option>
-              <option value="bones">Nur Knochen</option>
-              <option value="nerves">Nur Nerven</option>
-              <option value="markers">Nur Marker</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Session</label>
-            <input type="range" min="1" max="6" value="1" id="rngSession" />
-            <div class="mini" id="lblSession">Session 1</div>
-          </div>
-        </div>
+  function renderSVG(){
+    svgHost.innerHTML = `
+<svg viewBox="0 0 600 900" aria-label="Silhouette Front">
+  <!-- Base silhouette (one continuous shape for premium look) -->
+  <path class="base" d="
+    M300 70
+    C255 70 235 98 235 130
+    C235 160 253 182 278 196
+    C255 225 240 265 240 320
+    C240 360 250 395 265 420
+    C235 455 220 505 220 560
+    C220 655 260 720 285 760
+    C298 782 305 805 300 835
+    C295 805 302 782 315 760
+    C340 720 380 655 380 560
+    C380 505 365 455 335 420
+    C350 395 360 360 360 320
+    C360 265 345 225 322 196
+    C347 182 365 160 365 130
+    C365 98 345 70 300 70 Z
+  "/>
 
-        <div class="row">
-          <div class="field grow">
-            <label>Intensität</label>
-            <input type="range" min="1" max="10" value="6" id="rngIntensity" />
-            <div class="mini" id="lblIntensity">6 / 10</div>
-          </div>
-        </div>
-      </section>
+  <!-- Regions (transparent until active) -->
+  <!-- Head -->
+  <path id="head" class="region" data-name="kopf head"
+    d="M300 78
+       C270 78 252 98 252 126
+       C252 154 270 175 300 175
+       C330 175 348 154 348 126
+       C348 98 330 78 300 78 Z" />
 
-      <section class="block">
-        <div class="blockTitle">Search</div>
-        <div class="row">
-          <input id="txtSearch" type="text" placeholder="z. B. brachialis, humerus, quadrizeps…" />
-        </div>
-        <div class="row gap">
-          <button class="btn small" id="btnFind">Highlight</button>
-          <button class="btn small ghost" id="btnClear">Clear</button>
-        </div>
-        <div class="hint">IDs sind der Schlüssel: Voice → Normalisierung → <span class="mono">structure</span> → Region.</div>
-      </section>
+  <!-- Torso -->
+  <path id="torso" class="region" data-name="rumpf torso brust bauch"
+    d="M265 190
+       C250 230 248 265 248 320
+       C248 372 265 410 300 420
+       C335 410 352 372 352 320
+       C352 265 350 230 335 190
+       C315 205 285 205 265 190 Z" />
 
-      <section class="block">
-        <div class="blockTitle">Voice (Simulation)</div>
-        <input id="txtVoice" type="text" placeholder='z. B. "Brachialis rechts Schmerz 6/10 distal"' />
-        <div class="row gap">
-          <button class="btn" id="btnRunVoice">Anwenden</button>
-          <button class="btn ghost" id="btnExample">Beispiel</button>
-        </div>
-        <div class="hint">Parser ist bewusst simpel – zeigt den Flow: Struktur erkennen → Layer ggf. aktivieren → einfärben + optional Pin + Notiz.</div>
-      </section>
+  <!-- Left Arm (upper+lower) -->
+  <path id="arm_left" class="region" data-name="arm links linker arm left arm"
+    d="M240 255
+       C195 270 175 305 168 345
+       C160 392 176 435 206 466
+       C220 480 238 470 236 448
+       C232 420 226 380 230 345
+       C233 318 243 290 252 270
+       C255 262 250 252 240 255 Z" />
+  <!-- Right Arm -->
+  <path id="arm_right" class="region" data-name="arm rechts rechter arm right arm"
+    d="M360 255
+       C405 270 425 305 432 345
+       C440 392 424 435 394 466
+       C380 480 362 470 364 448
+       C368 420 374 380 370 345
+       C367 318 357 290 348 270
+       C345 262 350 252 360 255 Z" />
 
-      <section class="block">
-        <div class="blockTitle">Note</div>
-        <textarea id="txtNote" placeholder="Druckschmerz distal, Supination triggert…"></textarea>
-        <div class="row gap">
-          <button class="btn" id="btnSaveNote">Speichern</button>
-          <button class="btn danger ghost" id="btnDeleteSel">Auswahl löschen</button>
-        </div>
-        <div class="hint">Speichert Demo-Markierungen in <span class="mono">localStorage</span> (nur im Browser). In echt: pro Patient/Session im Backend.</div>
-      </section>
+  <!-- Left Hand -->
+  <path id="hand_left" class="region" data-name="hand links linke hand left hand"
+    d="M192 486
+       C176 498 174 520 186 534
+       C198 548 224 552 238 536
+       C250 520 244 494 226 486
+       C214 480 202 480 192 486 Z" />
+  <!-- Right Hand -->
+  <path id="hand_right" class="region" data-name="hand rechts rechte hand right hand"
+    d="M408 486
+       C424 498 426 520 414 534
+       C402 548 376 552 362 536
+       C350 520 356 494 374 486
+       C386 480 398 480 408 486 Z" />
 
-      <section class="block">
-        <div class="blockTitle">Status</div>
-        <div class="status" id="statusBox">
-          Klick auf eine Struktur (Muskel/Knochen/Nerv) oder nutze Voice/Suche.
-          <div class="mini" style="margin-top:8px">
-            Quickkeys: <span class="kbd">Esc</span> Clear • <span class="kbd">Enter</span> Voice anwenden
-          </div>
-        </div>
-      </section>
-    </aside>
+  <!-- Left Leg -->
+  <path id="leg_left" class="region" data-name="bein links linkes bein left leg"
+    d="M278 430
+       C250 455 238 500 242 560
+       C246 626 268 700 292 745
+       C302 764 322 756 316 732
+       C300 670 292 610 292 560
+       C292 520 300 472 310 448
+       C314 438 290 420 278 430 Z" />
+  <!-- Right Leg -->
+  <path id="leg_right" class="region" data-name="bein rechts rechtes bein right leg"
+    d="M322 430
+       C350 455 362 500 358 560
+       C354 626 332 700 308 745
+       C298 764 278 756 284 732
+       C300 670 308 610 308 560
+       C308 520 300 472 290 448
+       C286 438 310 420 322 430 Z" />
 
-    <section class="stageWrap">
-      <div class="stageHead">
-        <div class="stageTitle">BodyMap • Front</div>
-        <div class="stageBadges">
-          <span class="badge">SVG-Layer</span>
-          <span class="badge">Click-to-highlight</span>
-          <span class="badge">Session</span>
-        </div>
-      </div>
+  <!-- Left Foot -->
+  <path id="foot_left" class="region" data-name="fuss fuß links linker fuss left foot"
+    d="M280 748
+       C254 756 244 778 255 796
+       C268 816 300 820 320 805
+       C338 792 338 768 320 758
+       C306 750 292 746 280 748 Z" />
+  <!-- Right Foot -->
+  <path id="foot_right" class="region" data-name="fuss fuß rechts rechter fuss right foot"
+    d="M320 748
+       C346 756 356 778 345 796
+       C332 816 300 820 280 805
+       C262 792 262 768 280 758
+       C294 750 308 746 320 748 Z" />
+</svg>`;
+  }
 
-      <div class="stage">
-        <div class="watermark">Kintaro Demo • Front</div>
-        <div class="svgHost" id="svgHost"></div>
-      </div>
+  renderSVG();
 
-      <div class="marks">
-        <div class="marksHead">
-          <div class="marksTitle">Session-Markierungen</div>
-          <span class="badge">lokal gespeichert</span>
-        </div>
-        <div class="marksList" id="listMarks"></div>
-      </div>
-    </section>
-  </main>
+  // ---------------------------
+  // Interaction (click + voice)
+  // ---------------------------
+  const status = document.getElementById("status");
+  const rngIntensity = document.getElementById("rngIntensity");
+  const btnMic = document.getElementById("btnMic");
+  const btnStop = document.getElementById("btnStop");
+  const btnReset = document.getElementById("btnReset");
+  const micDot = document.getElementById("micDot");
+  const micLabel = document.getElementById("micLabel");
 
-  <script src="./app.js"></script>
+  const svg = () => svgHost.querySelector("svg");
+
+  function setFillByIntensity(n){
+    const a = 0.18 + (n-1) * (0.62/9); // 0.18..0.80
+    document.documentElement.style.setProperty("--fill", `rgba(230,193,90,${a.toFixed(3)})`);
+  }
+  setFillByIntensity(parseInt(rngIntensity.value,10));
+
+  function setStatus(html){ status.innerHTML = "Status: " + html; }
+
+  function clearAll(){
+    svg().querySelectorAll(".region.active").forEach(el=>el.classList.remove("active"));
+  }
+
+  function activateById(id){
+    const el = svg().getElementById(id);
+    if (!el) return false;
+    el.classList.add("active");
+    setStatus(`<b>${id}</b> aktiviert.`);
+    return true;
+  }
+
+  function activateByName(text){
+    const t = normalize(text);
+    // map common concepts to ids
+    const mapping = [
+      { id:"head",       keys:["kopf","head"] },
+      { id:"torso",      keys:["rumpf","torso","brust","bauch","koerper","körper"] },
+      { id:"arm_left",   keys:["arm links","linker arm","arm left"] },
+      { id:"arm_right",  keys:["arm rechts","rechter arm","arm right"] },
+      { id:"hand_left",  keys:["hand links","linke hand","hand left"] },
+      { id:"hand_right", keys:["hand rechts","rechte hand","hand right"] },
+      { id:"leg_left",   keys:["bein links","linkes bein","leg left"] },
+      { id:"leg_right",  keys:["bein rechts","rechtes bein","leg right"] },
+      { id:"foot_left",  keys:["fuss links","fuß links","linker fuss","left foot"] },
+      { id:"foot_right", keys:["fuss rechts","fuß rechts","rechter fuss","right foot"] },
+
+      // convenient shortcuts (without side)
+      { id:"arm_left",   keys:["arm"] },
+      { id:"hand_left",  keys:["hand"] },
+      { id:"leg_left",   keys:["bein"] },
+      { id:"foot_left",  keys:["fuss","fuß"] },
+    ];
+
+    // Prefer explicit side
+    const hasRight = /\b(rechts|right)\b/.test(t);
+    const hasLeft  = /\b(links|left)\b/.test(t);
+
+    // If user says "hand" without side → highlight both hands (nice UX)
+    if (/\b(hand)\b/.test(t) && !hasLeft && !hasRight){
+      activateById("hand_left");
+      activateById("hand_right");
+      return true;
+    }
+    if (/\b(arm)\b/.test(t) && !hasLeft && !hasRight){
+      activateById("arm_left");
+      activateById("arm_right");
+      return true;
+    }
+    if (/\b(bein|leg)\b/.test(t) && !hasLeft && !hasRight){
+      activateById("leg_left");
+      activateById("leg_right");
+      return true;
+    }
+    if (/\b(fuss|fuß|foot)\b/.test(t) && !hasLeft && !hasRight){
+      activateById("foot_left");
+      activateById("foot_right");
+      return true;
+    }
+
+    // With side, match best
+    for (const m of mapping){
+      for (const k of m.keys){
+        if (t.includes(k)){
+          // if key is generic, apply side logic
+          if (k === "hand"){
+            return activateById(hasRight ? "hand_right" : "hand_left");
+          }
+          if (k === "arm"){
+            return activateById(hasRight ? "arm_right" : "arm_left");
+          }
+          if (k === "bein"){
+            return activateById(hasRight ? "leg_right" : "leg_left");
+          }
+          if (k === "fuss" || k === "fuß"){
+            return activateById(hasRight ? "foot_right" : "foot_left");
+          }
+          return activateById(m.id);
+        }
+      }
+    }
+
+    // fallback: try data-name search
+    const regions = [...svg().querySelectorAll(".region")];
+    const hit = regions.find(r => normalize(r.dataset.name||"").includes(t));
+    if (hit){
+      hit.classList.add("active");
+      setStatus(`<b>${hit.id}</b> aktiviert (fallback).`);
+      return true;
+    }
+    return false;
+  }
+
+  function normalize(s){
+    return (s||"")
+      .toLowerCase()
+      .replace(/[ä]/g,"ae").replace(/[ö]/g,"oe").replace(/[ü]/g,"ue").replace(/ß/g,"ss")
+      .replace(/[^a-z0-9\\s]/g," ")
+      .replace(/\\s+/g," ")
+      .trim();
+  }
+
+  // Click handling
+  svg().addEventListener("click", (e)=>{
+    const el = e.target;
+    if (!el.classList.contains("region")) return;
+    el.classList.toggle("active");
+    setStatus(`<b>${el.id}</b> ${el.classList.contains("active") ? "aktiviert" : "deaktiviert"}.`);
+  });
+
+  // ---------------------------
+  // Voice Agent (Web Speech API)
+  // ---------------------------
+  let recognition = null;
+  let listening = false;
+
+  function supportsSpeech(){
+    return ("webkitSpeechRecognition" in window) || ("SpeechRecognition" in window);
+  }
+
+  function setMicUI(on){
+    listening = on;
+    micDot.classList.toggle("off", !on);
+    micLabel.textContent = on ? "Mic: An" : "Mic: Aus";
+    btnMic.textContent = on ? "🎙️ Listening…" : "🎙️ Start Listening";
+  }
+
+  function startListening(){
+    if (!supportsSpeech()){
+      setStatus(`Speech Recognition wird in diesem Browser nicht unterstützt. (Chrome/Edge verwenden)`);
+      return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.lang = "de-DE";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    recognition.onstart = () => {
+      setMicUI(true);
+      setStatus(`Listening… Sag <span class="mono">„Anzeige …“</span> z. B. <span class="mono">Anzeige Hand rechts</span>.`);
+    };
+
+    recognition.onerror = (e) => {
+      setMicUI(false);
+      setStatus(`Mic-Fehler: <span class="mono">${e.error}</span>`);
+    };
+
+    recognition.onend = () => {
+      // auto-restart if user didn't press stop (keeps "agent" feel)
+      if (listening){
+        try { recognition.start(); } catch(_) {}
+      } else {
+        setMicUI(false);
+      }
+    };
+
+    let lastFinal = "";
+    recognition.onresult = (ev) => {
+      let interim = "";
+      let finalText = "";
+      for (let i = ev.resultIndex; i < ev.results.length; i++){
+        const res = ev.results[i];
+        const txt = res[0].transcript;
+        if (res.isFinal) finalText += txt + " ";
+        else interim += txt + " ";
+      }
+
+      const show = (finalText || interim).trim();
+      if (!show) return;
+
+      // live status
+      setStatus(`🎧 <span class="mono">${escapeHtml(show)}</span>`);
+
+      if (finalText){
+        const cmd = normalize(finalText);
+        if (cmd === lastFinal) return;
+        lastFinal = cmd;
+        handleCommand(cmd);
+      }
+    };
+
+    try { recognition.start(); } catch(e){
+      setStatus(`Konnte Mic nicht starten: ${escapeHtml(String(e))}`);
+    }
+  }
+
+  function stopListening(){
+    listening = false;
+    setMicUI(false);
+    if (recognition){
+      try { recognition.onend = null; recognition.stop(); } catch(_) {}
+      recognition = null;
+    }
+    setStatus("Mic gestoppt.");
+  }
+
+  function handleCommand(cmd){
+    // global commands
+    if (cmd.includes("reset") || cmd.includes("alles aus") || cmd.includes("clear")){
+      clearAll();
+      setStatus("Alles zurückgesetzt.");
+      return;
+    }
+
+    // intensity: "intensitaet 8"
+    const m = cmd.match(/intensitaet\\s*(10|[1-9])/);
+    if (m){
+      const v = parseInt(m[1],10);
+      rngIntensity.value = String(v);
+      setFillByIntensity(v);
+      setStatus(`Intensität gesetzt: <b>${v}/10</b>`);
+      return;
+    }
+
+    // wake word: "anzeige ..."
+    const wake = cmd.includes("anzeige") || cmd.includes("silhouette");
+    if (!wake){
+      // ignore background speech (agent feel)
+      return;
+    }
+
+    // After wake word: try to find body part words in entire command
+    // Behavior: do NOT clear previous by default. If you want that: say "Reset" first.
+    const ok = activateByName(cmd);
+    if (!ok){
+      setStatus(`Nicht erkannt. Versuch: <span class="mono">Anzeige Kopf</span> / <span class="mono">Anzeige Hand rechts</span>`);
+    }
+  }
+
+  function escapeHtml(s){
+    return (s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  // UI
+  btnMic.addEventListener("click", ()=>{
+    if (listening) return;
+    listening = true;
+    startListening();
+  });
+
+  btnStop.addEventListener("click", ()=> stopListening());
+  btnReset.addEventListener("click", ()=>{
+    clearAll();
+    setStatus("Reset.");
+  });
+
+  rngIntensity.addEventListener("input", (e)=>{
+    setFillByIntensity(parseInt(e.target.value,10));
+  });
+
+  // keyboard shortcuts
+  window.addEventListener("keydown", (e)=>{
+    if (e.key === "Escape"){
+      clearAll();
+      setStatus("Reset.");
+    }
+    if (e.code === "Space"){
+      e.preventDefault();
+      if (listening) stopListening();
+      else { listening = true; startListening(); }
+    }
+  });
+
+  // initial tip
+  setStatus(`Bereit. Klicke z. B. <b>head</b> oder starte Mic und sag <span class="mono">Anzeige Hand</span>.`);
+</script>
 </body>
 </html>
