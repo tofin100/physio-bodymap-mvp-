@@ -1,565 +1,695 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Kintaro • BodyMap MVP — 50 Muskeln (Latein) + Voice</title>
+  <meta charset="UTF-8" />
+  <title>PhysioNote • Voice UI Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <style>
-    :root{
-      --bg:#050814;
-      --line:rgba(255,255,255,.10);
-      --text:#EAF0FF;
-      --muted:#AAB3CF;
-      --gold:#E6C15A;
-      --cyan:#52E6FF;
-      --danger:#FF5C7A;
-      --shadow: 0 14px 50px rgba(0,0,0,.55);
-      --fill: rgba(230,193,90,.60);
-      --fill2: rgba(82,230,255,.40);
+    :root {
+      --bg: #f5f5f7;
+      --card: #ffffff;
+      --border: #d1d5db;
+      --border-strong: #9ca3af;
+      --accent: #06b6d4;
+      --accent-soft: rgba(6, 182, 212, 0.08);
+      --accent-dark: #0f172a;
+      --text: #111827;
+      --muted: #6b7280;
+      --danger: #b91c1c;
+      --ok: #16a34a;
+      --shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      color:var(--text);
-      background:
-        radial-gradient(1000px 650px at 18% 10%, rgba(82,230,255,.12), transparent 55%),
-        radial-gradient(900px 600px at 80% 20%, rgba(230,193,90,.10), transparent 55%),
-        linear-gradient(180deg, #030513, var(--bg));
-      min-height:100vh;
-    }
-    .topbar{
-      max-width:1100px;margin:0 auto;
-      padding:16px 16px 10px;
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:34px;height:34px;border-radius:12px;
-      background:
-        radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.35), transparent 60%),
-        linear-gradient(135deg, rgba(82,230,255,.35), rgba(230,193,90,.22));
-      border:1px solid rgba(255,255,255,.14);
-      box-shadow: 0 0 22px rgba(82,230,255,.12);
-    }
-    .title{
-      font-weight:860;letter-spacing:.25px;font-size:16px;
-      background: linear-gradient(90deg, var(--gold), #fff, var(--cyan));
-      -webkit-background-clip:text;background-clip:text;color:transparent;
-    }
-    .subtitle{font-size:12.5px;color:var(--muted);margin-top:2px}
 
-    .shell{
-      max-width:1100px;margin:0 auto;
-      padding:10px 16px 24px;
-      display:grid;grid-template-columns: 360px 1fr;
-      gap:14px;
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
     }
-    .card{
-      border-radius:16px;
-      border:1px solid var(--line);
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+
+    .app-shell {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 16px 40px;
+    }
+
+    .card {
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: var(--card);
       box-shadow: var(--shadow);
-      overflow:hidden;
+      padding: 18px 20px;
     }
-    .cardHead{
-      padding:12px 12px 10px;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      background: linear-gradient(180deg, rgba(82,230,255,.06), rgba(230,193,90,.04));
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
+    .card + .card { margin-top: 16px; }
+
+    /* HERO */
+    .hero-card { text-align: center; position: relative; overflow: hidden; }
+    .hero-card::before{
+      content:"";
+      position:absolute; inset:-40%;
+      background: radial-gradient(circle at top, rgba(15,118,190,0.12), transparent 55%);
+      pointer-events:none;
     }
-    .cardTitle{font-weight:820;font-size:13px}
-    .cardBody{padding:12px}
+    .hero-inner { position: relative; z-index: 1; display:flex; flex-direction:column; align-items:center; gap:10px; }
+    .pill{
+      display:inline-flex; align-items:center; justify-content:center;
+      border-radius:999px; padding:3px 10px; font-size:11px;
+      letter-spacing:.07em; text-transform:uppercase;
+      border:1px solid rgba(6,182,212,.6);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .hero-title{
+      font-size: 32px; font-weight: 800;
+      letter-spacing: -0.05em;
+      color: var(--accent-dark);
+    }
+    .hero-title span{
+      background: linear-gradient(to right, #0f172a, #0284c7);
+      -webkit-background-clip:text; background-clip:text;
+      color: transparent;
+    }
+    .hero-sub{ font-size:14px; color: var(--muted); max-width: 650px; }
+    .meta{ font-size:12px; color: var(--muted); }
 
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-    .field{display:flex;flex-direction:column;gap:7px;flex:1}
-    label{font-size:12px;color:var(--muted)}
-    input[type="range"]{width:100%}
+    .mic-indicator{
+      font-size: 12px;
+      border-radius: 999px;
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      position: absolute;
+      right: 20px;
+      top: 18px;
+      user-select: none;
+    }
+    #speech-status-indicator.active { color: var(--ok); font-weight: 700; }
+    #speech-status-indicator.error { color: var(--danger); font-weight: 700; }
 
-    .btn{
-      border:none;cursor:pointer;
-      padding:10px 10px;border-radius:12px;
-      font-weight:780;font-size:12.5px;
-      color:var(--text);
-      background: rgba(82,230,255,.13);
-      border:1px solid rgba(82,230,255,.24);
-      transition: transform .05s ease, background .15s ease, border .15s ease;
+    /* FORM */
+    h3{ margin:0; }
+    .section-title{ font-size:14px; font-weight: 700; margin-bottom: 10px; color: var(--accent-dark); }
+
+    label{
+      font-size: 12px; color: var(--muted);
+      display:block; margin-bottom: 3px;
+    }
+    input[type="text"], input[type="date"], input[type="number"], textarea {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      color: var(--text);
+      font-size: 13px;
+      padding: 8px 10px;
+      outline: none;
+    }
+    input:focus, textarea:focus{
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(6,182,212,.3);
+      background: #ffffff;
+    }
+    textarea{ resize: vertical; line-height:1.45; min-height: 110px; }
+
+    .grid {
+      display:grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .button{
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap: 6px;
+      transition: all .15s ease-out;
       user-select:none;
     }
-    .btn:hover{background: rgba(82,230,255,.17); border-color: rgba(82,230,255,.34)}
-    .btn:active{transform: translateY(1px)}
-    .btn.ghost{ background: rgba(0,0,0,.22); border-color: rgba(255,255,255,.14); }
-    .btn.danger{ background: rgba(255,92,122,.14); border-color: rgba(255,92,122,.28); }
-    .btn.small{padding:7px 9px;font-size:12px}
-
-    .chip{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 10px;border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.20);
-      color: rgba(255,255,255,.88);
-      font-size:12px;
+    .button-primary{
+      background: var(--accent);
+      color: #ecfeff;
+      box-shadow: 0 8px 24px rgba(6,182,212,.35);
     }
-    .dot{
-      width:10px;height:10px;border-radius:999px;
-      background: var(--cyan);
-      box-shadow: 0 0 18px rgba(82,230,255,.35);
+    .button-primary:hover{ filter:brightness(1.03); transform: translateY(-1px); }
+    .button-ghost{
+      background: #f9fafb;
+      color: var(--accent-dark);
+      border:1px solid var(--border);
     }
-    .dot.off{background: rgba(255,255,255,.18); box-shadow:none}
-
-    .hint{font-size:12px;color:var(--muted);line-height:1.35;margin-top:8px}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;}
-    .status{
-      padding:10px;border-radius:14px;
-      border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.22);
-      font-size:12.5px;color: rgba(255,255,255,.88);
-      line-height:1.35; word-break: break-word;
+    .button-ghost:hover{ background:#fff; }
+    .button-danger{
+      background:#fee2e2;
+      color: var(--danger);
+      border:1px solid #fecaca;
     }
 
-    .stage{
-      position:relative;min-height: 780px;padding:12px;
-      background:
-        radial-gradient(360px 260px at 50% 18%, rgba(255,255,255,.05), transparent 65%),
-        linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.22));
-    }
-    .stageInner{
-      position:absolute; inset:12px;
-      border-radius:16px;border:1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.10);
-      display:flex;align-items:center;justify-content:center;
-      overflow:hidden;
-    }
-    svg{width:100%;height:100%;display:block}
-
-    .base{
-      fill: rgba(255,255,255,0.06);
-      stroke: rgba(255,255,255,0.16);
-      stroke-width:2.2;
-      stroke-linejoin:round;
-      stroke-linecap:round;
-    }
-    .muscle{
-      fill: rgba(0,0,0,0);
-      stroke: rgba(255,255,255,0.06);
-      stroke-width:1.2;
-      cursor:pointer;
-      transition: fill .18s ease, filter .18s ease, opacity .18s ease;
-    }
-    .muscle:hover{filter: drop-shadow(0 0 10px rgba(82,230,255,.18))}
-    .muscle.active{
-      fill: var(--fill);
-      filter: drop-shadow(0 0 14px rgba(230,193,90,.25));
-    }
-    .muscle.secondary{
-      fill: var(--fill2);
-      filter: drop-shadow(0 0 14px rgba(82,230,255,.22));
+    .row{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between; }
+    .row-left{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    .status-box{
+      border-radius: 14px;
+      border: 1px dashed var(--border-strong);
+      background: #f9fafb;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.35;
     }
 
-    @media (max-width: 980px){
-      .shell{grid-template-columns:1fr}
-      .stage{min-height: 680px}
+    /* Tabs */
+    .tab-buttons{
+      display:flex; flex-wrap:wrap; gap:6px;
+      margin-bottom: 10px;
+    }
+    .tab-label{
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      color: var(--muted);
+      user-select: none;
+    }
+    .tab-label.active{
+      background: var(--accent);
+      color: #ecfeff;
+      border-color: var(--accent);
+      box-shadow: 0 6px 18px rgba(6,182,212,.4);
+    }
+    .tab-panels{
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #f9fafb;
+      padding: 12px 14px;
+    }
+    .tab-panel{ display:none; }
+    .tab-panel.active{ display:block; }
+
+    .focus-ring{
+      outline: 2px solid rgba(6,182,212,.9) !important;
+      box-shadow: 0 0 0 3px rgba(6,182,212,.18) !important;
+      background: #fff !important;
+    }
+
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .kbd{
+      font-size:11px; padding:2px 6px;
+      border:1px solid rgba(0,0,0,.14);
+      border-radius:6px;
+      background:#fff;
+      color:#111827;
     }
   </style>
 </head>
 
 <body>
-<header class="topbar">
-  <div class="brand">
-    <div class="logo" aria-hidden="true"></div>
-    <div>
-      <div class="title">Kintaro • Muscle Voice MVP</div>
-      <div class="subtitle">Sag direkt den Muskel (Latein) → wird markiert. (Optional: „links/rechts“)</div>
+  <div class="app-shell">
+
+    <!-- HERO -->
+    <div class="card hero-card">
+      <div class="hero-inner">
+        <div class="pill">Voice Test</div>
+        <h1 class="hero-title"><span>PhysioNote • Voice UI</span></h1>
+        <p class="hero-sub">
+          Testprojekt: komplette Oberfläche per Sprache steuern (Felder fokussieren, Inhalte diktieren, Tabs wechseln, Aktionen auslösen).
+          Keine ICD-10, keine Patientenliste, kein Backend.
+        </p>
+        <p class="meta">
+          Voice: <span class="mono">„Listening starten“</span> → <span class="mono">„Name: Max Mustermann“</span> → <span class="mono">„Patient anlegen“</span><br/>
+          Shortcuts: <span class="kbd">Space</span> Mic Toggle · <span class="kbd">Esc</span> Reset Fokus
+        </p>
+      </div>
+      <div class="mic-indicator">
+        🎤 <span id="speech-status-indicator">Mikrofon bereit</span>
+      </div>
     </div>
+
+    <!-- PATIENT FORM -->
+    <div class="card">
+      <div class="row" style="margin-bottom: 10px;">
+        <div>
+          <h3 class="section-title">Patient anlegen (Voice-first)</h3>
+          <div class="meta">Sag Feldname + Wert. Beispiel: <span class="mono">„Geburtsdatum: 20.12.1996“</span></div>
+        </div>
+
+        <div class="row-left">
+          <button id="btnStart" class="button button-primary" type="button">🎙️ Listening starten</button>
+          <button id="btnStop" class="button button-ghost" type="button">Stop</button>
+          <button id="btnClear" class="button button-danger" type="button">Reset Felder</button>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div>
+          <label for="patient-name-input">Name *</label>
+          <input id="patient-name-input" type="text" placeholder="Max Mustermann" autocomplete="off" />
+
+          <div style="height:10px;"></div>
+
+          <label for="patient-birthdate-input">Geburtsdatum</label>
+          <input id="patient-birthdate-input" type="text" placeholder="20.12.1996" autocomplete="off" />
+
+          <div style="height:10px;"></div>
+
+          <label for="patient-phone-input">Telefon (optional)</label>
+          <input id="patient-phone-input" type="text" placeholder="+41 79 123 45 67" autocomplete="off" />
+
+          <div style="height:10px;"></div>
+
+          <label for="patient-email-input">E-Mail (optional)</label>
+          <input id="patient-email-input" type="text" placeholder="max@example.com" autocomplete="off" />
+
+          <div style="height:12px;"></div>
+
+          <button id="btnCreatePatient" class="button button-primary" type="button">+ Patient anlegen</button>
+        </div>
+
+        <div>
+          <div class="status-box" id="voiceHelp">
+            <b>Voice-Kommandos (Beispiele)</b><br/>
+            <span class="mono">Listening starten</span> / <span class="mono">Listening stoppen</span><br/>
+            <span class="mono">Name: Max Mustermann</span><br/>
+            <span class="mono">Geburtsdatum: 20.12.1996</span><br/>
+            <span class="mono">Telefon: +41 79 ...</span><br/>
+            <span class="mono">Email: max@test.de</span><br/>
+            <span class="mono">Öffne Befund</span> / <span class="mono">Öffne Anamnese</span><br/>
+            <span class="mono">Diktieren starten</span> / <span class="mono">Diktieren stoppen</span><br/>
+            <span class="mono">Patient anlegen</span>
+            <div style="margin-top:8px;" class="meta" id="voiceLog">Status: bereit.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SESSION / TABS -->
+    <div class="card">
+      <h3 class="section-title">Sitzung (Tabs per Sprache)</h3>
+
+      <div class="tab-buttons" id="tab-buttons">
+        <button type="button" class="tab-label active" data-tab="anamnese">Anamnese</button>
+        <button type="button" class="tab-label" data-tab="befund">Befund</button>
+        <button type="button" class="tab-label" data-tab="diagnose">Diagnose</button>
+        <button type="button" class="tab-label" data-tab="therapieplan">Therapieplan</button>
+      </div>
+
+      <div class="tab-panels" id="tab-panels">
+        <div class="tab-panel active" data-panel="anamnese">
+          <label for="speech-anamnese">Anamnese (Diktat)</label>
+          <textarea id="speech-anamnese" placeholder="Sag: „Öffne Anamnese“ → „Diktieren starten“ → sprich → „Diktieren stoppen“"></textarea>
+        </div>
+
+        <div class="tab-panel" data-panel="befund">
+          <label for="speech-befund">Befund (Diktat)</label>
+          <textarea id="speech-befund" placeholder="Sag: „Öffne Befund“ → „Diktieren starten“…"></textarea>
+        </div>
+
+        <div class="tab-panel" data-panel="diagnose">
+          <label for="speech-diagnose">Diagnose (Diktat)</label>
+          <textarea id="speech-diagnose" placeholder="Sag: „Öffne Diagnose“ → „Diktieren starten“…"></textarea>
+        </div>
+
+        <div class="tab-panel" data-panel="therapieplan">
+          <label for="speech-therapieplan">Therapieplan (Diktat)</label>
+          <textarea id="speech-therapieplan" placeholder="Sag: „Öffne Therapieplan“ → „Diktieren starten“…"></textarea>
+        </div>
+      </div>
+
+      <div class="row" style="margin-top: 12px;">
+        <div class="meta">Aktionen per Sprache: <span class="mono">„Speichern“</span>, <span class="mono">„Kopieren“</span></div>
+        <div class="row-left">
+          <button id="btnSave" class="button button-primary" type="button">💾 Speichern</button>
+          <button id="btnCopy" class="button button-ghost" type="button">📋 Kopieren</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 10px;">
+        <label for="session-summary">Zusammenfassung (auto / manuell)</label>
+        <textarea id="session-summary" placeholder="Hier könnte später eine generierte Zusammenfassung erscheinen…"></textarea>
+      </div>
+    </div>
+
   </div>
-
-  <div class="chip">
-    <span class="dot off" id="micDot"></span>
-    <span id="micLabel">Mic: Aus</span>
-  </div>
-</header>
-
-<main class="shell">
-  <aside class="card">
-    <div class="cardHead">
-      <div class="cardTitle">Voice</div>
-      <button class="btn danger small" id="btnReset">Reset</button>
-    </div>
-
-    <div class="cardBody">
-      <div class="row" style="margin-bottom:10px;">
-        <button class="btn" id="btnMic">🎙️ Start Listening</button>
-        <button class="btn ghost" id="btnStop">Stop</button>
-      </div>
-
-      <div class="field">
-        <label>Markierungs-Intensität</label>
-        <input type="range" min="1" max="10" value="7" id="rngIntensity" />
-        <div class="hint">Steuert die Deckkraft der Muskel-Markierung.</div>
-      </div>
-
-      <div class="hint" style="margin-top:12px">
-        <b>Beispiele (Latein):</b><br>
-        <span class="mono">biceps brachii</span> • <span class="mono">pectoralis major</span> • <span class="mono">rectus femoris</span><br>
-        <span class="mono">tibialis anterior</span> • <span class="mono">gastrocnemius</span> • <span class="mono">sternocleidomastoideus</span><br>
-        Optional: <span class="mono">links</span>/<span class="mono">rechts</span>
-      </div>
-
-      <div class="hint" style="margin-top:10px">
-        Extra: <span class="mono">reset</span> / <span class="mono">alles aus</span> / <span class="mono">intensitaet 8</span>
-      </div>
-
-      <div class="status" id="status" style="margin-top:12px">
-        Status: Bereit.
-      </div>
-    </div>
-  </aside>
-
-  <section class="card">
-    <div class="cardHead">
-      <div class="cardTitle">Front-Silhouette • 50 Muskeln (Overlay)</div>
-      <div class="row">
-        <span class="chip"><span class="dot"></span><span>Click / Voice</span></span>
-      </div>
-    </div>
-
-    <div class="stage">
-      <div class="stageInner">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1000" role="img" aria-label="Human silhouette front with muscle overlays">
-          <defs>
-            <filter id="softEdge" x="-20%" y="-20%" width="140%" height="140%">
-              <feGaussianBlur stdDeviation="1.2" result="b"/>
-              <feColorMatrix in="b" type="matrix"
-                values="1 0 0 0 0
-                        0 1 0 0 0
-                        0 0 1 0 0
-                        0 0 0 .18 0" result="g"/>
-              <feMerge>
-                <feMergeNode in="g"/>
-                <feMergeNode in="SourceGraphic"/>
-              </feMerge>
-            </filter>
-          </defs>
-
-          <g id="bodymap-front" filter="url(#softEdge)">
-            <!-- Base silhouette -->
-            <path class="base"
-              d="M300 72
-                 C268 72 247 92 244 121
-                 C240 159 266 184 300 186
-                 C334 184 360 159 356 121
-                 C353 92 332 72 300 72 Z
-                 M240 196
-                 C220 210 210 235 211 265
-                 C212 301 232 327 250 345
-                 C244 360 240 378 240 400
-                 C240 436 256 468 270 490
-                 C260 505 254 522 252 548
-                 C248 596 266 640 286 682
-                 C294 699 296 715 292 730
-                 C287 754 276 777 268 798
-                 C262 814 262 832 274 846
-                 C288 862 312 861 322 846
-                 C330 835 330 819 324 802
-                 C316 780 306 757 303 732
-                 C301 718 304 701 312 682
-                 C332 640 350 596 348 548
-                 C347 522 340 505 330 490
-                 C344 468 360 436 360 400
-                 C360 378 356 360 350 345
-                 C368 327 388 301 389 265
-                 C390 235 380 210 360 196
-                 C340 220 320 234 300 234
-                 C280 234 260 220 240 196 Z
-                 M210 280
-                 C176 305 160 340 156 382
-                 C152 430 168 474 198 508
-                 C214 526 232 522 234 504
-                 C238 470 238 438 236 404
-                 C235 372 238 346 246 322
-                 C252 304 236 268 210 280 Z
-                 M390 280
-                 C424 305 440 340 444 382
-                 C448 430 432 474 402 508
-                 C386 526 368 522 366 504
-                 C362 470 362 438 364 404
-                 C365 372 362 346 354 322
-                 C348 304 364 268 390 280 Z"/>
-
-            <!-- MUSCLE OVERLAYS (50 muscles = 25 pairs L/R) -->
-            <g id="muscles">
-              <!-- Helper: We approximate with ellipses/polygons for quick MVP positioning -->
-              <!-- 1 Masseter -->
-              <ellipse id="masseter_l" class="muscle" cx="282" cy="138" rx="16" ry="14" />
-              <ellipse id="masseter_r" class="muscle" cx="318" cy="138" rx="16" ry="14" />
-
-              <!-- 2 Temporalis -->
-              <ellipse id="temporalis_l" class="muscle" cx="280" cy="112" rx="18" ry="16" />
-              <ellipse id="temporalis_r" class="muscle" cx="320" cy="112" rx="18" ry="16" />
-
-              <!-- 3 Sternocleidomastoideus -->
-              <polygon id="sternocleidomastoideus_l" class="muscle" points="285,182 270,220 286,232 300,202"/>
-              <polygon id="sternocleidomastoideus_r" class="muscle" points="315,182 300,202 314,232 330,220"/>
-
-              <!-- 4 Deltoideus -->
-              <ellipse id="deltoideus_l" class="muscle" cx="242" cy="258" rx="28" ry="24"/>
-              <ellipse id="deltoideus_r" class="muscle" cx="358" cy="258" rx="28" ry="24"/>
-
-              <!-- 5 Pectoralis major -->
-              <ellipse id="pectoralis_major_l" class="muscle" cx="270" cy="310" rx="48" ry="32"/>
-              <ellipse id="pectoralis_major_r" class="muscle" cx="330" cy="310" rx="48" ry="32"/>
-
-              <!-- 6 Serratus anterior -->
-              <polygon id="serratus_anterior_l" class="muscle" points="230,330 250,360 270,350 255,320"/>
-              <polygon id="serratus_anterior_r" class="muscle" points="370,330 345,320 330,350 350,360"/>
-
-              <!-- 7 Biceps brachii -->
-              <ellipse id="biceps_brachii_l" class="muscle" cx="220" cy="320" rx="20" ry="30"/>
-              <ellipse id="biceps_brachii_r" class="muscle" cx="380" cy="320" rx="20" ry="30"/>
-
-              <!-- 8 Brachialis -->
-              <ellipse id="brachialis_l" class="muscle" cx="235" cy="345" rx="16" ry="24"/>
-              <ellipse id="brachialis_r" class="muscle" cx="365" cy="345" rx="16" ry="24"/>
-
-              <!-- 9 Brachioradialis -->
-              <ellipse id="brachioradialis_l" class="muscle" cx="212" cy="420" rx="18" ry="34"/>
-              <ellipse id="brachioradialis_r" class="muscle" cx="388" cy="420" rx="18" ry="34"/>
-
-              <!-- 10 Flexor carpi radialis -->
-              <ellipse id="flexor_carpi_radialis_l" class="muscle" cx="224" cy="460" rx="14" ry="26"/>
-              <ellipse id="flexor_carpi_radialis_r" class="muscle" cx="376" cy="460" rx="14" ry="26"/>
-
-              <!-- 11 Palmaris longus -->
-              <ellipse id="palmaris_longus_l" class="muscle" cx="235" cy="485" rx="12" ry="24"/>
-              <ellipse id="palmaris_longus_r" class="muscle" cx="365" cy="485" rx="12" ry="24"/>
-
-              <!-- 12 Thenar (eminentia thenaris) -->
-              <ellipse id="eminentia_thenaris_l" class="muscle" cx="233" cy="552" rx="18" ry="14"/>
-              <ellipse id="eminentia_thenaris_r" class="muscle" cx="367" cy="552" rx="18" ry="14"/>
-
-              <!-- 13 Hypothenar (eminentia hypothenaris) -->
-              <ellipse id="eminentia_hypothenaris_l" class="muscle" cx="220" cy="558" rx="18" ry="14"/>
-              <ellipse id="eminentia_hypothenaris_r" class="muscle" cx="380" cy="558" rx="18" ry="14"/>
-
-              <!-- 14 Rectus abdominis -->
-              <ellipse id="rectus_abdominis_l" class="muscle" cx="285" cy="460" rx="24" ry="60"/>
-              <ellipse id="rectus_abdominis_r" class="muscle" cx="315" cy="460" rx="24" ry="60"/>
-
-              <!-- 15 Obliquus externus abdominis -->
-              <polygon id="obliquus_externus_abdominis_l" class="muscle" points="250,420 270,540 285,520 270,410"/>
-              <polygon id="obliquus_externus_abdominis_r" class="muscle" points="350,420 330,540 315,520 330,410"/>
-
-              <!-- 16 Iliopsoas -->
-              <ellipse id="iliopsoas_l" class="muscle" cx="285" cy="560" rx="18" ry="28"/>
-              <ellipse id="iliopsoas_r" class="muscle" cx="315" cy="560" rx="18" ry="28"/>
-
-              <!-- 17 Sartorius -->
-              <polygon id="sartorius_l" class="muscle" points="275,640 250,760 265,770 292,650"/>
-              <polygon id="sartorius_r" class="muscle" points="325,640 308,650 335,770 350,760"/>
-
-              <!-- 18 Rectus femoris -->
-              <ellipse id="rectus_femoris_l" class="muscle" cx="288" cy="720" rx="18" ry="60"/>
-              <ellipse id="rectus_femoris_r" class="muscle" cx="312" cy="720" rx="18" ry="60"/>
-
-              <!-- 19 Vastus lateralis -->
-              <ellipse id="vastus_lateralis_l" class="muscle" cx="270" cy="730" rx="22" ry="62"/>
-              <ellipse id="vastus_lateralis_r" class="muscle" cx="330" cy="730" rx="22" ry="62"/>
-
-              <!-- 20 Vastus medialis -->
-              <ellipse id="vastus_medialis_l" class="muscle" cx="295" cy="770" rx="18" ry="40"/>
-              <ellipse id="vastus_medialis_r" class="muscle" cx="305" cy="770" rx="18" ry="40"/>
-
-              <!-- 21 Adductor longus -->
-              <ellipse id="adductor_longus_l" class="muscle" cx="287" cy="700" rx="14" ry="44"/>
-              <ellipse id="adductor_longus_r" class="muscle" cx="313" cy="700" rx="14" ry="44"/>
-
-              <!-- 22 Gracilis -->
-              <polygon id="gracilis_l" class="muscle" points="295,660 280,820 292,828 308,668"/>
-              <polygon id="gracilis_r" class="muscle" points="305,660 292,668 308,828 320,820"/>
-
-              <!-- 23 Tibialis anterior -->
-                           <ellipse id="vastus_medialis_l" class="muscle" cx="295" cy="770" rx="18" ry="40"/>
-              <ellipse id="vastus_medialis_r" class="muscle" cx="305" cy="770" rx="18" ry="40"/>
-
-            </g> <!-- /muscles -->
-          </g> <!-- /bodymap-front -->
-        </svg>
-      </div>
-    </div>
-  </section>
-</main>
 
 <script>
-  /* ===============================
-     HELPERS
-  =============================== */
-  const $ = (id) => document.getElementById(id);
-  const statusEl = $("status");
-  const rngIntensity = $("rngIntensity");
-  const micDot = $("micDot");
-  const micLabel = $("micLabel");
+/* =========================================================
+   VOICE UI – Full Surface Control (MVP)
+   - Works best in Chrome (Desktop/Android)
+   ========================================================= */
 
-  function setStatus(txt){
-    statusEl.innerHTML = "Status: " + txt;
+(function(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const indicator = document.getElementById("speech-status-indicator");
+  const logEl = document.getElementById("voiceLog");
+
+  const btnStart = document.getElementById("btnStart");
+  const btnStop  = document.getElementById("btnStop");
+  const btnClear = document.getElementById("btnClear");
+
+  const btnCreatePatient = document.getElementById("btnCreatePatient");
+  const btnSave = document.getElementById("btnSave");
+  const btnCopy = document.getElementById("btnCopy");
+
+  const fields = {
+    name: document.getElementById("patient-name-input"),
+    birthdate: document.getElementById("patient-birthdate-input"),
+    phone: document.getElementById("patient-phone-input"),
+    email: document.getElementById("patient-email-input"),
+  };
+
+  const textareas = {
+    anamnese: document.getElementById("speech-anamnese"),
+    befund: document.getElementById("speech-befund"),
+    diagnose: document.getElementById("speech-diagnose"),
+    therapieplan: document.getElementById("speech-therapieplan"),
+    summary: document.getElementById("session-summary"),
+  };
+
+  const tabButtons = [...document.querySelectorAll(".tab-label")];
+  const tabPanels  = [...document.querySelectorAll(".tab-panel")];
+
+  let recognition = null;
+  let listening = false;
+  let dictation = false;
+  let focusEl = null;
+
+  function setLog(msg){
+    logEl.textContent = "Status: " + msg;
+  }
+
+  function setIndicator(state, cls){
+    indicator.textContent = state;
+    indicator.classList.remove("active","error");
+    if (cls) indicator.classList.add(cls);
   }
 
   function normalize(s){
     return (s||"")
       .toLowerCase()
       .replace(/[ä]/g,"ae").replace(/[ö]/g,"oe").replace(/[ü]/g,"ue").replace(/ß/g,"ss")
-      .replace(/[^a-z0-9\s]/g," ")
+      .replace(/[^\p{L}\p{N}\s:.\-+@]/gu, " ")
       .replace(/\s+/g," ")
       .trim();
   }
 
-  /* ===============================
-     INTENSITY
-  =============================== */
-  function setFillByIntensity(n){
-    const a = 0.22 + (n-1) * (0.7/9);
-    document.documentElement.style.setProperty(
-      "--fill", `rgba(230,193,90,${a.toFixed(2)})`
-    );
+  function clearFocusRing(){
+    document.querySelectorAll(".focus-ring").forEach(el => el.classList.remove("focus-ring"));
   }
-  setFillByIntensity(parseInt(rngIntensity.value,10));
-  rngIntensity.addEventListener("input", e=>{
-    setFillByIntensity(parseInt(e.target.value,10));
+
+  function focus(el){
+    if(!el) return;
+    clearFocusRing();
+    focusEl = el;
+    el.classList.add("focus-ring");
+    el.focus({preventScroll:false});
+  }
+
+  function resetAll(){
+    Object.values(fields).forEach(i => i.value = "");
+    Object.values(textareas).forEach(t => t.value = "");
+    clearFocusRing();
+    focusEl = null;
+    dictation = false;
+    setLog("Felder geleert. Fokus zurückgesetzt.");
+  }
+
+  function openTab(tabKey){
+    const btn = tabButtons.find(b => b.getAttribute("data-tab") === tabKey);
+    if (btn) btn.click();
+    // focus default textarea for that tab
+    if (textareas[tabKey]) focus(textareas[tabKey]);
+  }
+
+  // Tab click behavior
+  tabButtons.forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const target = btn.getAttribute("data-tab");
+      tabButtons.forEach(b => b.classList.remove("active"));
+      tabPanels.forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      const panel = document.querySelector(`.tab-panel[data-panel="${target}"]`);
+      if(panel) panel.classList.add("active");
+    });
   });
 
-  /* ===============================
-     MUSCLE HANDLING
-  =============================== */
-  const svg = document.querySelector("svg");
-  const muscles = () => [...svg.querySelectorAll(".muscle")];
+  // Actions
+  btnClear.addEventListener("click", resetAll);
 
-  function clearAll(){
-    muscles().forEach(m => m.classList.remove("active","secondary"));
-  }
-
-  function activate(id, secondary=false){
-    const el = svg.getElementById(id);
-    if(!el) return false;
-    el.classList.add(secondary ? "secondary" : "active");
-    return true;
-  }
-
-  svg.addEventListener("click", e=>{
-    if(!e.target.classList.contains("muscle")) return;
-    e.target.classList.toggle("active");
-    setStatus(`<b>${e.target.id}</b> geklickt`);
-  });
-
-  /* ===============================
-     MUSCLE DICTIONARY (1–20)
-  =============================== */
-  const MUSCLES = [
-    ["masseter","masseter"],
-    ["temporalis","temporalis"],
-    ["sternocleidomastoideus","sternocleidomastoideus","scm"],
-    ["deltoideus","deltoideus"],
-    ["pectoralis major","pectoralis_major"],
-    ["serratus anterior","serratus_anterior"],
-    ["biceps brachii","biceps_brachii","biceps"],
-    ["brachialis","brachialis"],
-    ["brachioradialis","brachioradialis"],
-    ["flexor carpi radialis","flexor_carpi_radialis"],
-    ["palmaris longus","palmaris_longus"],
-    ["eminentia thenaris","eminentia_thenaris"],
-    ["eminentia hypothenaris","eminentia_hypothenaris"],
-    ["rectus abdominis","rectus_abdominis"],
-    ["obliquus externus abdominis","obliquus_externus_abdominis"],
-    ["iliopsoas","iliopsoas"],
-    ["sartorius","sartorius"],
-    ["rectus femoris","rectus_femoris"],
-    ["vastus lateralis","vastus_lateralis"],
-    ["vastus medialis","vastus_medialis"]
-  ];
-
-  const lookup = new Map();
-  MUSCLES.forEach(([latin,key,...aliases])=>{
-    lookup.set(normalize(latin),key);
-    aliases.forEach(a=>lookup.set(normalize(a),key));
-  });
-
-  function detectSide(t){
-    if(/\b(rechts|right|dexter)\b/.test(t)) return "r";
-    if(/\b(links|left|sinister)\b/.test(t)) return "l";
-    return null;
-  }
-
-  function matchMuscle(t){
-    if(lookup.has(t)) return lookup.get(t);
-    for(const k of lookup.keys()){
-      if(t.includes(k)) return lookup.get(k);
-    }
-    return null;
-  }
-
-  /* ===============================
-     VOICE
-  =============================== */
-  let recognition;
-  let listening = false;
-
-  function startListening(){
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR){
-      setStatus("SpeechRecognition nicht verfügbar (Chrome nutzen).");
+  btnCreatePatient.addEventListener("click", ()=>{
+    const name = fields.name.value.trim();
+    if(!name){
+      setLog("Name fehlt. Sag: „Name: ...“");
+      focus(fields.name);
       return;
     }
+    setLog(`Patient angelegt (Test): ${name}`);
+    // In real app: create record. Here only test.
+  });
+
+  btnSave.addEventListener("click", ()=>{
+    setLog("Gespeichert (Test).");
+  });
+
+  btnCopy.addEventListener("click", async ()=>{
+    const payload = [
+      `Name: ${fields.name.value || "-"}`,
+      `Geburtsdatum: ${fields.birthdate.value || "-"}`,
+      `Telefon: ${fields.phone.value || "-"}`,
+      `Email: ${fields.email.value || "-"}`,
+      "",
+      "ANAMNESE:",
+      textareas.anamnese.value || "",
+      "",
+      "BEFUND:",
+      textareas.befund.value || "",
+      "",
+      "DIAGNOSE:",
+      textareas.diagnose.value || "",
+      "",
+      "THERAPIEPLAN:",
+      textareas.therapieplan.value || "",
+      "",
+      "ZUSAMMENFASSUNG:",
+      textareas.summary.value || ""
+    ].join("\n");
+
+    try{
+      await navigator.clipboard.writeText(payload);
+      setLog("In Zwischenablage kopiert.");
+    }catch(e){
+      setLog("Kopieren nicht möglich (Browser-Berechtigung).");
+    }
+  });
+
+  // Speech recognition setup
+  function startListening(){
+    if(!SR){
+      setIndicator("Speech API fehlt", "error");
+      setLog("Nutze Chrome (Desktop/Android).");
+      return;
+    }
+    if(recognition) try{ recognition.stop(); } catch(e){}
+
     recognition = new SR();
     recognition.lang = "de-DE";
     recognition.continuous = true;
+    recognition.interimResults = false;
 
     recognition.onstart = ()=>{
       listening = true;
-      micDot.classList.remove("off");
-      micLabel.textContent = "Mic: An";
-      setStatus("Listening… sag einen Muskel (Latein).");
+      setIndicator("Mikro aktiv", "active");
+      setLog("Listening aktiv. Sag z.B. „Name: Max Mustermann“.");
     };
 
-    recognition.onresult = (e)=>{
-      const txt = normalize(e.results[e.results.length-1][0].transcript);
-      const side = detectSide(txt);
-      const base = matchMuscle(txt);
+    recognition.onerror = (e)=>{
+      setIndicator("Mikro Fehler", "error");
+      setLog(`Fehler: ${e.error || "unknown"}`);
+    };
 
-      if(!base){
-        setStatus(`Nicht erkannt: <span class="mono">${txt}</span>`);
+    recognition.onend = ()=>{
+      // some browsers stop unexpectedly; keep UX simple: if listening flag true, restart
+      if(listening){
+        try{ recognition.start(); } catch(e){}
+      } else {
+        setIndicator("Mikrofon bereit");
+      }
+    };
+
+    recognition.onresult = (ev)=>{
+      const raw = ev.results[ev.results.length-1][0].transcript || "";
+      const t = normalize(raw);
+
+      // ---- GLOBAL COMMANDS
+      if (t.includes("listening stoppen") || t === "stop" || t.includes("mikro aus")) {
+        stopListening();
+        return;
+      }
+      if (t.includes("reset felder") || t === "reset" || t.includes("alles loeschen") || t.includes("alles löschen")) {
+        resetAll();
         return;
       }
 
-      clearAll();
-
-      if(side==="l"){ activate(base+"_l"); }
-      else if(side==="r"){ activate(base+"_r"); }
-      else{
-        activate(base+"_l");
-        activate(base+"_r",true);
+      // ---- MODE COMMANDS
+      if (t.includes("diktieren starten") || t.includes("diktat starten")) {
+        dictation = true;
+        // if no focus, choose current tab textarea
+        const activeTab = document.querySelector(".tab-label.active")?.getAttribute("data-tab");
+        if (!focusEl && activeTab && textareas[activeTab]) focus(textareas[activeTab]);
+        setLog("Diktatmodus AN. Sprich Text…");
+        return;
+      }
+      if (t.includes("diktieren stoppen") || t.includes("diktat stoppen")) {
+        dictation = false;
+        setLog("Diktatmodus AUS.");
+        return;
       }
 
-      setStatus(`Muskel markiert: <b>${base}</b>`);
+      // ---- TAB COMMANDS
+      if (t.includes("oeffne anamnese") || t.includes("öffne anamnese")) { openTab("anamnese"); setLog("Tab: Anamnese"); return; }
+      if (t.includes("oeffne befund") || t.includes("öffne befund")) { openTab("befund"); setLog("Tab: Befund"); return; }
+      if (t.includes("oeffne diagnose") || t.includes("öffne diagnose")) { openTab("diagnose"); setLog("Tab: Diagnose"); return; }
+      if (t.includes("oeffne therapieplan") || t.includes("öffne therapieplan") || t.includes("oeffne therapie plan") || t.includes("öffne therapie plan")) {
+        openTab("therapieplan"); setLog("Tab: Therapieplan"); return;
+      }
+
+      // ---- ACTION COMMANDS
+      if (t.includes("patient anlegen") || t.includes("patient erstellen")) { btnCreatePatient.click(); return; }
+      if (t === "speichern" || t.includes("sitzung speichern")) { btnSave.click(); return; }
+      if (t.includes("kopieren") || t.includes("zwischenablage")) { btnCopy.click(); return; }
+      if (t.includes("listening starten") || t.includes("mikro an")) { /* already listening */ setLog("Listening läuft."); return; }
+
+      // ---- FIELD FOCUS + VALUE (best: "field: value")
+      // Accept patterns like: "name: max mustermann" OR "name max mustermann"
+      const colon = t.indexOf(":");
+      let head = "";
+      let value = "";
+      if (colon !== -1){
+        head = t.slice(0, colon).trim();
+        value = t.slice(colon+1).trim();
+      } else {
+        // try split by first space for commands like "name max"
+        const parts = t.split(" ");
+        head = parts[0] || "";
+        value = parts.slice(1).join(" ").trim();
+      }
+
+      // field synonyms
+      const fieldKey = (()=>{
+        if (["name","patient","patientname","patientenname"].includes(head)) return "name";
+        if (["geburtsdatum","geburtstag","geb"].includes(head)) return "birthdate";
+        if (["telefon","handy","nummer","tel"].includes(head)) return "phone";
+        if (["email","e-mail","mail"].includes(head)) return "email";
+        if (["zusammenfassung","summary"].includes(head)) return "summary";
+        if (["anamnese"].includes(head)) return "anamnese";
+        if (["befund"].includes(head)) return "befund";
+        if (["diagnose"].includes(head)) return "diagnose";
+        if (["therapieplan","plan"].includes(head)) return "therapieplan";
+        return "";
+      })();
+
+      // If they said only field name (no value): set focus
+      if (fieldKey && !value){
+        if (fields[fieldKey]) { focus(fields[fieldKey]); setLog(`Fokus: ${fieldKey}`); return; }
+        if (textareas[fieldKey]) { focus(textareas[fieldKey]); setLog(`Fokus: ${fieldKey}`); return; }
+      }
+
+      // If fieldKey + value: set value
+      if (fieldKey && value){
+        if (fields[fieldKey]){
+          focus(fields[fieldKey]);
+          fields[fieldKey].value = value;
+          fields[fieldKey].dispatchEvent(new Event("input"));
+          setLog(`Gesetzt: ${fieldKey} = ${value}`);
+          return;
+        }
+        if (textareas[fieldKey]){
+          openTab(fieldKey);
+          focus(textareas[fieldKey]);
+          textareas[fieldKey].value = value;
+          textareas[fieldKey].dispatchEvent(new Event("input"));
+          setLog(`Gesetzt: ${fieldKey} (Text)`);
+          return;
+        }
+        if (fieldKey === "summary"){
+          focus(textareas.summary);
+          textareas.summary.value = value;
+          setLog("Zusammenfassung gesetzt.");
+          return;
+        }
+      }
+
+      // ---- FREE DICTATION
+      if (dictation && focusEl){
+        const current = focusEl.value || "";
+        focusEl.value = (current ? current + " " : "") + raw.trim();
+        focusEl.dispatchEvent(new Event("input"));
+        setLog("Diktiert…");
+        return;
+      }
+
+      // ---- If not dictating, treat as "set to focused field" if a field is focused
+      if (!dictation && focusEl){
+        // helpful for short inputs after you said: "Name"
+        if (focusEl.tagName === "INPUT"){
+          focusEl.value = raw.trim();
+          focusEl.dispatchEvent(new Event("input"));
+          setLog("Wert ins fokussierte Feld gesetzt.");
+          return;
+        }
+      }
+
+      setLog(`Unklar: „${raw.trim()}“ (Tipp: „Feld: Wert“ oder „Diktieren starten“)`);
     };
 
-    recognition.start();
+    try{
+      recognition.start();
+    }catch(e){
+      // might throw if already started
+    }
   }
 
   function stopListening(){
-    if(recognition){
-      recognition.stop();
-      recognition = null;
-    }
     listening = false;
-    micDot.classList.add("off");
-    micLabel.textContent = "Mic: Aus";
-    setStatus("Mic gestoppt.");
+    dictation = false;
+    try{ recognition && recognition.stop(); }catch(e){}
+    setIndicator("Mikrofon bereit");
+    setLog("Listening gestoppt.");
   }
 
-  $("btnMic").onclick = startListening;
-  $("btnStop").onclick = stopListening;
-  $("btnReset").onclick = ()=>{ clearAll(); setStatus("Reset."); };
+  btnStart.addEventListener("click", startListening);
+  btnStop.addEventListener("click", stopListening);
 
-  setStatus("Bereit. Starte Mic.");
+  // Keyboard shortcuts
+  document.addEventListener("keydown", (e)=>{
+    if(e.code === "Space"){
+      e.preventDefault();
+      if(!listening) startListening();
+      else stopListening();
+    }
+    if(e.code === "Escape"){
+      clearFocusRing();
+      focusEl = null;
+      dictation = false;
+      setLog("Fokus entfernt. Diktat AUS.");
+    }
+  });
+
+  // Initial state
+  setIndicator("Mikrofon bereit");
+  setLog("Bereit. Klick „Listening starten“ oder sag (nach Start): „Name: Max Mustermann“.");
+
+})();
 </script>
 
 </body>
