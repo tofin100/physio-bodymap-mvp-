@@ -1,0 +1,270 @@
+:root{
+  --bg:#070B16;
+  --panel:#0D1430;
+  --panel2:#0A1026;
+  --text:#E9EDF7;
+  --muted:#AAB3CF;
+  --gold:#E6C15A;
+  --cyan:#52E6FF;
+  --danger:#FF5C7A;
+
+  --shadow: 0 12px 40px rgba(0,0,0,.45);
+  --line: rgba(255,255,255,.10);
+  --line2: rgba(255,255,255,.08);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background:
+    radial-gradient(1100px 650px at 20% 10%, rgba(82,230,255,.11), transparent 55%),
+    radial-gradient(900px 600px at 80% 20%, rgba(230,193,90,.10), transparent 55%),
+    linear-gradient(180deg, #040814, var(--bg));
+  color:var(--text);
+}
+
+.topbar{
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 16px 18px 10px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+}
+
+.brand{display:flex; align-items:center; gap:12px}
+.logo{
+  width:34px;height:34px;border-radius:11px;
+  background:
+    radial-gradient(12px 12px at 30% 30%, rgba(255,255,255,.35), transparent 60%),
+    linear-gradient(135deg, rgba(82,230,255,.35), rgba(230,193,90,.22));
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow: 0 0 24px rgba(82,230,255,.10);
+}
+.brandText .title{
+  font-weight: 820;
+  letter-spacing:.3px;
+  font-size: 16px;
+  background: linear-gradient(90deg, var(--gold), #fff, var(--cyan));
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.brandText .subtitle{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+.right{display:flex; align-items:center; gap:10px}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.18);
+  color: rgba(255,255,255,.88);
+  font-size:12px;
+}
+.dot{
+  width:10px;height:10px;border-radius:999px;
+  background: var(--cyan);
+  box-shadow: 0 0 18px rgba(82,230,255,.35);
+}
+
+.shell{
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 10px 18px 22px;
+  display:grid;
+  grid-template-columns: 380px 1fr;
+  gap:14px;
+}
+
+.panel, .stage, .marks{
+  border-radius: 16px;
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+
+.panelHead{
+  padding:12px 12px 10px;
+  border-bottom:1px solid var(--line2);
+  background: linear-gradient(180deg, rgba(82,230,255,.06), rgba(230,193,90,.04));
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.panelTitle{font-weight:800;font-size:13px}
+
+.block{padding:12px}
+.blockTitle{font-weight:780;font-size:12.8px;margin-bottom:10px;color:#F3F6FF}
+
+.toggles{display:grid;grid-template-columns:1fr 1fr; gap:8px}
+.toggle{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 10px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.16);
+  font-size:12.5px;
+}
+.toggle input{accent-color: var(--cyan)}
+
+.field{display:flex;flex-direction:column;gap:7px}
+.field label{font-size:12px;color:var(--muted)}
+.field select, .field input[type="text"], textarea{
+  width:100%;
+  padding:10px 10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  color: var(--text);
+  outline:none;
+}
+textarea{min-height:92px;resize:vertical}
+
+.row{display:flex; align-items:center; gap:10px}
+.row.gap{gap:8px}
+.grow{flex:1}
+
+.mini{font-size:11.5px;color:var(--muted)}
+.hint{margin-top:8px;font-size:12px;color:var(--muted);line-height:1.35}
+.mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+
+.btn{
+  border:none;
+  cursor:pointer;
+  padding:10px 10px;
+  border-radius:12px;
+  font-weight:750;
+  font-size:12.5px;
+  color: var(--text);
+  background: rgba(82,230,255,.12);
+  border:1px solid rgba(82,230,255,.22);
+  transition: transform .05s ease, background .15s ease, border .15s ease;
+}
+.btn:hover{background: rgba(82,230,255,.16); border-color: rgba(82,230,255,.32)}
+.btn:active{transform: translateY(1px)}
+.btn.small{padding:7px 9px;font-size:12px}
+
+.btn.ghost{
+  background: rgba(0,0,0,.18);
+  border-color: rgba(255,255,255,.14);
+}
+.btn.ghost:hover{border-color: rgba(255,255,255,.22)}
+.btn.danger{
+  background: rgba(255,92,122,.16);
+  border-color: rgba(255,92,122,.26);
+}
+.btn.danger.ghost{
+  background: rgba(0,0,0,.18);
+  border-color: rgba(255,92,122,.26);
+}
+
+.stageWrap{display:flex; flex-direction:column; gap:12px}
+.stageHead{
+  display:flex;align-items:center;justify-content:space-between;
+  padding: 0 2px;
+}
+.stageTitle{font-weight:860;letter-spacing:.2px}
+.stageBadges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{
+  font-size:11.5px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.18);
+  color: rgba(255,255,255,.86);
+}
+
+.stage{
+  position:relative;
+  min-height: 720px;
+  padding: 12px;
+  background:
+    radial-gradient(340px 240px at 50% 18%, rgba(255,255,255,.05), transparent 65%),
+    linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.18));
+}
+.watermark{
+  position:absolute;
+  top:10px; right:12px;
+  font-size:11px;
+  color: rgba(255,255,255,.42);
+}
+.svgHost{
+  position:absolute; inset: 12px;
+  display:flex;align-items:center;justify-content:center;
+}
+svg{width:100%; height:100%; display:block}
+
+/* SVG layer behavior */
+.layer{transition: opacity .18s ease, filter .18s ease}
+.dim{opacity:.08 !important; filter:saturate(.65) contrast(.95)}
+.hidden{opacity:0 !important; pointer-events:none !important}
+
+/* Regions */
+.region{cursor:pointer; transition: opacity .16s ease, filter .16s ease, fill .16s ease, stroke .16s ease}
+.region:hover{filter: drop-shadow(0 0 10px rgba(82,230,255,.20))}
+.region.is-active{filter: drop-shadow(0 0 12px rgba(230,193,90,.34))}
+.region.is-related{opacity:.55}
+
+.outline{fill:none;stroke:rgba(255,255,255,.22);stroke-width:2}
+.silhouette{fill:rgba(255,255,255,.04);stroke:rgba(255,255,255,.16);stroke-width:2}
+
+.bones .region{fill: rgba(255,255,255,.11); stroke: rgba(255,255,255,.18); stroke-width:1.2}
+.nerves .region{fill:none; stroke: rgba(82,230,255,.65); stroke-width:3.2; stroke-linecap:round; stroke-linejoin:round}
+.muscles .region{fill: rgba(82,230,255,.00); stroke: rgba(255,255,255,.06); stroke-width:1.2}
+
+/* active fill controlled via CSS var */
+.muscles .region.is-active{fill: var(--activeFill); stroke: rgba(255,255,255,.14)}
+.bones .region.is-active{fill: rgba(230,193,90,.18)}
+.nerves .region.is-active{stroke: rgba(230,193,90,.95)}
+
+.markers .pin{fill: rgba(255,92,122,.95); stroke: rgba(255,255,255,.28); stroke-width:2}
+.markers .pin-ring{fill:none; stroke: rgba(255,92,122,.28); stroke-width:8; opacity:.55}
+
+/* Marks */
+.marksHead{
+  padding:12px 12px 10px;
+  border-bottom:1px solid var(--line2);
+  background: linear-gradient(180deg, rgba(82,230,255,.06), rgba(230,193,90,.04));
+  display:flex;align-items:center;justify-content:space-between;
+}
+.marksTitle{font-weight:820;font-size:13px}
+.marks{padding:0}
+.marksList{
+  padding:12px;
+  display:flex;flex-direction:column;gap:10px;
+  max-height: 260px;
+  overflow:auto;
+}
+.item{
+  padding:10px 10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.14);
+}
+.itemTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.itemName{font-weight:820;font-size:12.6px}
+.itemMeta{font-size:11.5px;color:var(--muted);margin-top:4px}
+.itemNote{font-size:12.5px;color:rgba(255,255,255,.90);margin-top:8px;line-height:1.35}
+.kbd{
+  font-size:11px;
+  padding:2px 6px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:6px;
+  background: rgba(0,0,0,.18);
+  color: rgba(255,255,255,.88);
+}
+
+.status{
+  padding:10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.10);
+  background: rgba(0,0,0,.18);
+  font-size:12.5px;
+  color: rgba(255,255,255,.88);
+  line-height:1.35;
+}
+
+@media (max-width: 980px){
+  .shell{grid-template-columns:1fr}
+  .stage{min-height: 640px}
+}
