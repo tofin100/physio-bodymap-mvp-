@@ -1,562 +1,139 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <title>Physio BodyMap – Schmerzpunkte & Notizen</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --bg-page: #f3f4f6;
-      --bg-card: #ffffff;
-      --border: #e5e7eb;
-      --text: #111827;
-      --muted: #6b7280;
-
-      --pin-fill: rgba(239, 68, 68, 0.28);   /* rot transparent */
-      --pin-stroke: #ef4444;                 /* rot Vollton */
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg-page);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 1100px;
-      background: var(--bg-card);
-      border-radius: 1rem;
-      border: 1px solid var(--border);
-      box-shadow:
-        0 20px 25px -5px rgba(15, 23, 42, 0.06),
-        0 8px 10px -6px rgba(15, 23, 42, 0.04);
-      padding: 1.4rem 1.7rem 1.1rem;
-    }
-
-    .card-header {
-      margin-bottom: 0.9rem;
-    }
-
-    .card-title {
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-
-    .card-subtitle {
-      font-size: 0.9rem;
-      color: var(--muted);
-      margin-top: 0.15rem;
-    }
-
-    .hint {
-      font-size: 0.8rem;
-      color: var(--muted);
-      margin-top: 0.6rem;
-    }
-
-    .bodies {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1.25rem;
-      justify-content: center;
-      align-items: flex-start;
-    }
-
-    .body-panel {
-      flex: 1;
-      min-width: 280px;
-      max-width: 380px;
-      border-radius: 0.9rem;
-      border: 1px solid var(--border);
-      background: #ffffff;
-      padding: 0.75rem;
-    }
-
-    .body-label {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--muted);
-      margin-bottom: 0.25rem;
-    }
-
-    .body-figure {
-      position: relative;
-      width: 100%;
-      padding-bottom: 220%; /* hochkant Figur */
-      overflow: hidden;
-      border-radius: 0.75rem;
-      background: #ffffff;
-    }
-
-    .body-img {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      user-select: none;
-      -webkit-user-drag: none;
-      pointer-events: none; /* nur Overlay klickbar */
-    }
-
-    .body-overlay {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .body-overlay svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-
-    .pin {
-      fill: var(--pin-fill);
-      stroke: var(--pin-stroke);
-      stroke-width: 4;
-      cursor: pointer;
-      transition: transform 0.1s ease;
-    }
-
-    .pin:hover {
-      transform: scale(1.06);
-    }
-
-    .selected-box {
-      margin-top: 1rem;
-      padding-top: 0.75rem;
-      border-top: 1px solid var(--border);
-    }
-
-    .selected-title {
-      font-size: 0.82rem;
-      font-weight: 500;
-      margin-bottom: 0.35rem;
-    }
-
-    .notes-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-      max-height: 220px;
-      overflow-y: auto;
-    }
-
-    .note-item {
-      font-size: 0.78rem;
-      padding: 0.35rem 0.55rem;
-      border-radius: 0.5rem;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 0.5rem;
-    }
-
-    .note-meta {
-      font-weight: 500;
-      color: var(--muted);
-      margin-bottom: 0.1rem;
-    }
-
-    .note-text {
-      white-space: pre-wrap;
-      word-break: break-word;
-    }
-
-    .note-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-    }
-
-    .note-button {
-      border: none;
-      background: transparent;
-      color: #6b7280;
-      font-size: 0.72rem;
-      padding: 0;
-      cursor: pointer;
-      text-align: right;
-    }
-
-    .note-button:hover {
-      color: #dc2626;
-    }
-
-    .selected-empty {
-      font-size: 0.76rem;
-      color: var(--muted);
-    }
-
-    .actions {
-      margin-top: 0.65rem;
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-    }
-
-    .btn {
-      padding: 0.35rem 0.9rem;
-      border-radius: 999px;
-      border: 1px solid var(--border);
-      background: #f9fafb;
-      font-size: 0.75rem;
-      cursor: pointer;
-      color: var(--muted);
-    }
-
-    .btn:hover {
-      border-color: #bfdbfe;
-      color: #2563eb;
-    }
-
-    @media (max-width: 768px) {
-      .card {
-        padding: 1.25rem 1.1rem;
-      }
-    }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kintaro • BodyMap (Front) — SVG Layer Web-App</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="card">
-    <div class="card-header">
-      <div class="card-title">Physio BodyMap – Schmerzpunkte & Notizen</div>
-      <div class="card-subtitle">
-        Realistische Muskelansicht mit frei platzierbaren roten Markierungen und Notizen.
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div class="brandText">
+        <div class="title">Kintaro BodyMap</div>
+        <div class="subtitle">Front • SVG-Layer • Klick • Voice (Demo) • Session</div>
       </div>
-      <p class="hint">
-        <strong>Bedienung:</strong> Klick auf den Körper setzt einen roten Kreis.
-        Danach kannst du eine Notiz eingeben. Klick auf einen Kreis, um die Notiz zu bearbeiten oder den Punkt zu löschen.
-      </p>
     </div>
 
-    <div class="bodies">
-      <!-- Vorderseite -->
-      <div class="body-panel">
-        <div class="body-label">Vorderseite</div>
-        <div class="body-figure">
-          <img
-            src="0CF43E39-F38F-4845-ABD0-E50B344B063C.png"
-            alt="Muskelkörper Vorderseite"
-            class="body-img"
-          />
-          <div class="body-overlay">
-            <!-- viewBox: 1000 x 2000 für saubere Prozentrechnung -->
-            <svg viewBox="0 0 1000 2000" data-side="front">
-              <!-- Pins werden per JS eingefügt -->
-            </svg>
+    <div class="right">
+      <div class="chip"><span class="dot"></span><span>Prototype • GitHub-ready</span></div>
+      <a class="btn ghost" href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+  </header>
+
+  <main class="shell">
+    <aside class="panel">
+      <div class="panelHead">
+        <div class="panelTitle">Controls</div>
+        <button class="btn danger small" id="btnReset">Reset</button>
+      </div>
+
+      <section class="block">
+        <div class="blockTitle">Layer</div>
+        <div class="toggles">
+          <label class="toggle"><input type="checkbox" id="togSil" checked><span>Silhouette</span></label>
+          <label class="toggle"><input type="checkbox" id="togBones" checked><span>Knochen</span></label>
+          <label class="toggle"><input type="checkbox" id="togMuscles" checked><span>Muskeln</span></label>
+          <label class="toggle"><input type="checkbox" id="togNerves"><span>Nerven</span></label>
+          <label class="toggle"><input type="checkbox" id="togMarkers" checked><span>Marker</span></label>
+        </div>
+
+        <div class="row gap">
+          <div class="field">
+            <label>Isolate</label>
+            <select id="selIsolate">
+              <option value="mix">Mix (Premium Dim)</option>
+              <option value="muscles">Nur Muskeln</option>
+              <option value="bones">Nur Knochen</option>
+              <option value="nerves">Nur Nerven</option>
+              <option value="markers">Nur Marker</option>
+            </select>
           </div>
+          <div class="field">
+            <label>Session</label>
+            <input type="range" min="1" max="6" value="1" id="rngSession" />
+            <div class="mini" id="lblSession">Session 1</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field grow">
+            <label>Intensität</label>
+            <input type="range" min="1" max="10" value="6" id="rngIntensity" />
+            <div class="mini" id="lblIntensity">6 / 10</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="block">
+        <div class="blockTitle">Search</div>
+        <div class="row">
+          <input id="txtSearch" type="text" placeholder="z. B. brachialis, humerus, quadrizeps…" />
+        </div>
+        <div class="row gap">
+          <button class="btn small" id="btnFind">Highlight</button>
+          <button class="btn small ghost" id="btnClear">Clear</button>
+        </div>
+        <div class="hint">IDs sind der Schlüssel: Voice → Normalisierung → <span class="mono">structure</span> → Region.</div>
+      </section>
+
+      <section class="block">
+        <div class="blockTitle">Voice (Simulation)</div>
+        <input id="txtVoice" type="text" placeholder='z. B. "Brachialis rechts Schmerz 6/10 distal"' />
+        <div class="row gap">
+          <button class="btn" id="btnRunVoice">Anwenden</button>
+          <button class="btn ghost" id="btnExample">Beispiel</button>
+        </div>
+        <div class="hint">Parser ist bewusst simpel – zeigt den Flow: Struktur erkennen → Layer ggf. aktivieren → einfärben + optional Pin + Notiz.</div>
+      </section>
+
+      <section class="block">
+        <div class="blockTitle">Note</div>
+        <textarea id="txtNote" placeholder="Druckschmerz distal, Supination triggert…"></textarea>
+        <div class="row gap">
+          <button class="btn" id="btnSaveNote">Speichern</button>
+          <button class="btn danger ghost" id="btnDeleteSel">Auswahl löschen</button>
+        </div>
+        <div class="hint">Speichert Demo-Markierungen in <span class="mono">localStorage</span> (nur im Browser). In echt: pro Patient/Session im Backend.</div>
+      </section>
+
+      <section class="block">
+        <div class="blockTitle">Status</div>
+        <div class="status" id="statusBox">
+          Klick auf eine Struktur (Muskel/Knochen/Nerv) oder nutze Voice/Suche.
+          <div class="mini" style="margin-top:8px">
+            Quickkeys: <span class="kbd">Esc</span> Clear • <span class="kbd">Enter</span> Voice anwenden
+          </div>
+        </div>
+      </section>
+    </aside>
+
+    <section class="stageWrap">
+      <div class="stageHead">
+        <div class="stageTitle">BodyMap • Front</div>
+        <div class="stageBadges">
+          <span class="badge">SVG-Layer</span>
+          <span class="badge">Click-to-highlight</span>
+          <span class="badge">Session</span>
         </div>
       </div>
 
-      <!-- Rückseite -->
-      <div class="body-panel">
-        <div class="body-label">Rückseite</div>
-        <div class="body-figure">
-          <img
-            src="667B025A-1E63-4456-9C9F-D389C044D9CD.png"
-            alt="Muskelkörper Rückseite"
-            class="body-img"
-          />
-          <div class="body-overlay">
-            <svg viewBox="0 0 1000 2000" data-side="back">
-              <!-- Pins werden per JS eingefügt -->
-            </svg>
-          </div>
+      <div class="stage">
+        <div class="watermark">Kintaro Demo • Front</div>
+        <div class="svgHost" id="svgHost"></div>
+      </div>
+
+      <div class="marks">
+        <div class="marksHead">
+          <div class="marksTitle">Session-Markierungen</div>
+          <span class="badge">lokal gespeichert</span>
         </div>
+        <div class="marksList" id="listMarks"></div>
       </div>
-    </div>
+    </section>
+  </main>
 
-    <div class="selected-box">
-      <div class="selected-title">Gespeicherte Markierungen & Notizen</div>
-      <div id="notesList" class="notes-list"></div>
-      <div class="actions">
-        <button id="clearBtn" class="btn">Alle Markierungen löschen</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    // ------------------------------
-    // Datenstruktur für Pins
-    // ------------------------------
-    const STORAGE_KEY = "physio_bodymap_pins_v1";
-
-    /**
-     * pin = {
-     *   id: string,
-     *   side: "front" | "back",
-     *   x: number,  // in ViewBox-Koordinaten (0..1000)
-     *   y: number,  // 0..2000
-     *   radius: number,
-     *   note: string
-     * }
-     */
-    let pins = [];
-
-    // ------------------------------
-    // Storage
-    // ------------------------------
-    function loadPins() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          pins = parsed;
-        }
-      } catch (e) {
-        console.error("Fehler beim Laden der Pins:", e);
-      }
-    }
-
-    function savePins() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(pins));
-    }
-
-    function createId() {
-      return (
-        Math.random().toString(36).slice(2, 8) +
-        "-" +
-        Date.now().toString(36)
-      );
-    }
-
-    // ------------------------------
-    // Rendering der Pins im SVG
-    // ------------------------------
-    function renderPinsForSide(side) {
-      const svg = document.querySelector(`svg[data-side="${side}"]`);
-      if (!svg) return;
-
-      while (svg.firstChild) svg.removeChild(svg.firstChild);
-
-      pins.filter(p => p.side === side).forEach(pin => {
-        const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        c.setAttribute("cx", pin.x);
-        c.setAttribute("cy", pin.y);
-        c.setAttribute("r", pin.radius);
-        c.setAttribute("class", "pin");
-        if (pin.note) {
-          c.setAttribute("title", pin.note);
-        }
-        c.dataset.id = pin.id;
-
-        c.addEventListener("click", evt => {
-          evt.stopPropagation(); // verhindert, dass ein neuer Punkt erzeugt wird
-          editOrDeletePin(pin.id);
-        });
-
-        svg.appendChild(c);
-      });
-    }
-
-    function renderAllPins() {
-      renderPinsForSide("front");
-      renderPinsForSide("back");
-    }
-
-    // ------------------------------
-    // Pins hinzufügen / bearbeiten / löschen
-    // ------------------------------
-    function addPin(side, x, y) {
-      const note = prompt("Notiz zu diesem Punkt (z.B. Schmerzbeschreibung):", "");
-      const pin = {
-        id: createId(),
-        side,
-        x,
-        y,
-        radius: 60, // Kreisgröße (anpassbar)
-        note: note ? note.trim() : ""
-      };
-      pins.push(pin);
-      savePins();
-      renderAllPins();
-      renderNotesList();
-      notifyChange();
-    }
-
-    function editOrDeletePin(id) {
-      const pin = pins.find(p => p.id === id);
-      if (!pin) return;
-
-      const choice = prompt(
-        "Notiz bearbeiten oder 'DEL' eingeben, um den Punkt zu löschen:\n\nAktuelle Notiz:\n" + (pin.note || "(keine)"),
-        pin.note || ""
-      );
-
-      if (choice === null) {
-        // Abgebrochen
-        return;
-      }
-
-      if (choice.trim().toUpperCase() === "DEL") {
-        pins = pins.filter(p => p.id !== id);
-      } else {
-        pin.note = choice.trim();
-      }
-
-      savePins();
-      renderAllPins();
-      renderNotesList();
-      notifyChange();
-    }
-
-    function clearAllPins() {
-      if (!confirm("Alle Markierungen und Notizen wirklich löschen?")) return;
-      pins = [];
-      savePins();
-      renderAllPins();
-      renderNotesList();
-      notifyChange();
-    }
-
-    // ------------------------------
-    // SVG-Klick-Handling (neuen Kreis setzen)
-    // ------------------------------
-    function setupSvgClickHandlers() {
-      document.querySelectorAll("svg[data-side]").forEach(svg => {
-        svg.addEventListener("click", evt => {
-          const side = svg.dataset.side;
-          const rect = svg.getBoundingClientRect();
-          const x = ((evt.clientX - rect.left) / rect.width) * 1000;
-          const y = ((evt.clientY - rect.top) / rect.height) * 2000;
-          addPin(side, x, y);
-        });
-      });
-    }
-
-    // ------------------------------
-    // Notizliste unten
-    // ------------------------------
-    const notesListEl = document.getElementById("notesList");
-    const clearBtn = document.getElementById("clearBtn");
-
-    function renderNotesList() {
-      notesListEl.innerHTML = "";
-
-      if (pins.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "selected-empty";
-        empty.textContent = "Noch keine Markierungen gesetzt.";
-        notesListEl.appendChild(empty);
-        return;
-      }
-
-      pins.forEach((pin, idx) => {
-        const item = document.createElement("div");
-        item.className = "note-item";
-
-        const content = document.createElement("div");
-        const meta = document.createElement("div");
-        meta.className = "note-meta";
-        meta.textContent = `${idx + 1}. ${pin.side === "front" ? "Vorderseite" : "Rückseite"}`;
-
-        const text = document.createElement("div");
-        text.className = "note-text";
-        text.textContent = pin.note || "(keine Notiz)";
-
-        content.appendChild(meta);
-        content.appendChild(text);
-
-        const actions = document.createElement("div");
-        actions.className = "note-actions";
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "note-button";
-        editBtn.textContent = "Bearbeiten";
-        editBtn.addEventListener("click", () => editOrDeletePin(pin.id));
-
-        const delBtn = document.createElement("button");
-        delBtn.className = "note-button";
-        delBtn.textContent = "Löschen";
-        delBtn.addEventListener("click", () => {
-          pins = pins.filter(p => p.id !== pin.id);
-          savePins();
-          renderAllPins();
-          renderNotesList();
-          notifyChange();
-        });
-
-        actions.appendChild(editBtn);
-        actions.appendChild(delBtn);
-
-        item.appendChild(content);
-        item.appendChild(actions);
-
-        notesListEl.appendChild(item);
-      });
-    }
-
-    clearBtn.addEventListener("click", clearAllPins);
-
-    // ------------------------------
-    // Öffentliche API für später
-    // ------------------------------
-    const changeCallbacks = [];
-
-    function notifyChange() {
-      const snapshot = pins.map(p => ({ ...p }));
-      changeCallbacks.forEach(fn => {
-        try { fn(snapshot); } catch (e) { console.error(e); }
-      });
-    }
-
-    window.PhysioBodyMap = {
-      /** gibt alle Pins zurück */
-      getPins() {
-        return pins.map(p => ({ ...p }));
-      },
-      /** Pins von außen setzen */
-      setPins(newPins) {
-        if (!Array.isArray(newPins)) return;
-        pins = newPins.map(p => ({
-          id: p.id || createId(),
-          side: p.side === "back" ? "back" : "front",
-          x: Number(p.x) || 0,
-          y: Number(p.y) || 0,
-          radius: Number(p.radius) || 60,
-          note: p.note || ""
-        }));
-        savePins();
-        renderAllPins();
-        renderNotesList();
-        notifyChange();
-      },
-      /** alles löschen */
-      clear() {
-        pins = [];
-        savePins();
-        renderAllPins();
-        renderNotesList();
-        notifyChange();
-      },
-      /** Listener auf Änderungen */
-      onChange(fn) {
-        if (typeof fn === "function") changeCallbacks.push(fn);
-      }
-    };
-
-    // ------------------------------
-    // Init
-    // ------------------------------
-    loadPins();
-    renderAllPins();
-    renderNotesList();
-    setupSvgClickHandlers();
-  </script>
+  <script src="./app.js"></script>
 </body>
 </html>
