@@ -15,9 +15,7 @@
       --cyan:#52E6FF;
       --danger:#FF5C7A;
       --shadow: 0 14px 50px rgba(0,0,0,.55);
-
-      /* active fill (updated by intensity slider) */
-      --fill: rgba(230,193,90,.55);
+      --fill: rgba(230,193,90,.55); /* active fill */
     }
     *{box-sizing:border-box}
     body{
@@ -31,7 +29,6 @@
       min-height:100vh;
     }
 
-    /* top */
     .topbar{
       max-width:1100px;margin:0 auto;
       padding:16px 16px 10px;
@@ -53,7 +50,6 @@
     }
     .subtitle{font-size:12.5px;color:var(--muted);margin-top:2px}
 
-    /* layout */
     .shell{
       max-width:1100px;margin:0 auto;
       padding:10px 16px 24px;
@@ -93,14 +89,8 @@
     }
     .btn:hover{background: rgba(82,230,255,.17); border-color: rgba(82,230,255,.34)}
     .btn:active{transform: translateY(1px)}
-    .btn.ghost{
-      background: rgba(0,0,0,.22);
-      border-color: rgba(255,255,255,.14);
-    }
-    .btn.danger{
-      background: rgba(255,92,122,.14);
-      border-color: rgba(255,92,122,.28);
-    }
+    .btn.ghost{ background: rgba(0,0,0,.22); border-color: rgba(255,255,255,.14); }
+    .btn.danger{ background: rgba(255,92,122,.14); border-color: rgba(255,92,122,.28); }
     .btn.small{padding:7px 9px;font-size:12px}
 
     .chip{
@@ -119,36 +109,27 @@
     .dot.off{background: rgba(255,255,255,.18); box-shadow:none}
 
     .hint{font-size:12px;color:var(--muted);line-height:1.35;margin-top:8px}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono","Courier New", monospace;}
     .kbd{
-      font-size:11px;
-      padding:2px 6px;
-      border:1px solid rgba(255,255,255,.14);
-      border-radius:6px;
-      background: rgba(0,0,0,.18);
-      color: rgba(255,255,255,.88);
+      font-size:11px;padding:2px 6px;border:1px solid rgba(255,255,255,.14);
+      border-radius:6px;background: rgba(0,0,0,.18);color: rgba(255,255,255,.88);
     }
 
-    /* stage */
     .stage{
-      position:relative;
-      min-height: 780px;
-      padding:12px;
+      position:relative;min-height: 780px;padding:12px;
       background:
         radial-gradient(360px 260px at 50% 18%, rgba(255,255,255,.05), transparent 65%),
         linear-gradient(180deg, rgba(0,0,0,.10), rgba(0,0,0,.22));
     }
     .stageInner{
       position:absolute; inset:12px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.10);
       display:flex;align-items:center;justify-content:center;
       overflow:hidden;
     }
     svg{width:100%;height:100%;display:block}
 
-    /* silhouette + regions */
     .base{
       fill: rgba(255,255,255,0.06);
       stroke: rgba(255,255,255,0.16);
@@ -166,19 +147,14 @@
       transition: fill .18s ease, filter .18s ease, opacity .18s ease;
     }
     .region:hover{filter: drop-shadow(0 0 10px rgba(82,230,255,.20))}
-    .region.active{
-      fill: var(--fill);
-      filter: drop-shadow(0 0 12px rgba(230,193,90,.28));
-    }
-    .region.dim{opacity:.15}
+    .region.active{ fill: var(--fill); filter: drop-shadow(0 0 12px rgba(230,193,90,.28)); }
 
     .status{
       padding:10px;border-radius:14px;
       border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.22);
       font-size:12.5px;color: rgba(255,255,255,.88);
-      line-height:1.35;
-      word-break: break-word;
+      line-height:1.35; word-break: break-word;
     }
 
     @media (max-width: 980px){
@@ -194,7 +170,7 @@
     <div class="logo" aria-hidden="true"></div>
     <div>
       <div class="title">Kintaro • BodyMap MVP</div>
-      <div class="subtitle">Front Silhouette • Klick • Voice Agent mit Wakeword <span class="mono">„Anzeige“</span></div>
+      <div class="subtitle">Front Silhouette • Klick • Voice (Wakeword <span class="mono">„Anzeige“</span>)</div>
     </div>
   </div>
 
@@ -205,7 +181,6 @@
 </header>
 
 <main class="shell">
-  <!-- Controls -->
   <aside class="card">
     <div class="cardHead">
       <div class="cardTitle">Controls</div>
@@ -221,17 +196,17 @@
       <div class="field">
         <label>Intensität</label>
         <input type="range" min="1" max="10" value="6" id="rngIntensity" />
-        <div class="hint">Steuert die Deckkraft der Einfärbung.</div>
+        <div class="hint">Einfärbung (Deckkraft).</div>
       </div>
 
       <div class="hint" style="margin-top:12px">
-        <b>Kommandos:</b><br>
-        <span class="mono">Anzeige Kopf</span> • <span class="mono">Anzeige Hand rechts</span> • <span class="mono">Anzeige Bein</span><br>
+        <b>Voice Beispiele:</b><br>
+        <span class="mono">Anzeige Kopf</span> • <span class="mono">Anzeige Hand rechts</span> • <span class="mono">Anzeige Fuß</span><br>
         <span class="mono">Reset</span> • <span class="mono">Alles aus</span> • <span class="mono">Intensität 8</span>
       </div>
 
       <div class="hint" style="margin-top:10px">
-        Klick geht immer. Voice reagiert nur, wenn das Wakeword <span class="mono">Anzeige</span> drin ist.
+        Voice = <b>Single-Selection</b> (ersetzt Auswahl). Klick = Toggle.
       </div>
 
       <div style="margin-top:12px" class="status" id="status">
@@ -243,7 +218,6 @@
     </div>
   </aside>
 
-  <!-- Stage -->
   <section class="card">
     <div class="cardHead">
       <div class="cardTitle">Silhouette • Front</div>
@@ -254,7 +228,8 @@
 
     <div class="stage">
       <div class="stageInner">
-        <!-- Inline SVG: reliable click + voice mapping -->
+
+        <!-- Inline SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 1000" role="img" aria-label="Human silhouette front with regions">
           <defs>
             <filter id="softEdge" x="-20%" y="-20%" width="140%" height="140%">
@@ -272,15 +247,12 @@
           </defs>
 
           <g id="bodymap-front" filter="url(#softEdge)">
-            <!-- Base (non-clickable) -->
             <path class="base"
               d="M300 72
                  C268 72 247 92 244 121
                  C240 159 266 184 300 186
                  C334 184 360 159 356 121
-                 C353 92 332 72 300 72
-                 Z
-
+                 C353 92 332 72 300 72 Z
                  M240 196
                  C220 210 210 235 211 265
                  C212 301 232 327 250 345
@@ -302,44 +274,33 @@
                  C368 327 388 301 389 265
                  C390 235 380 210 360 196
                  C340 220 320 234 300 234
-                 C280 234 260 220 240 196
-                 Z
-
+                 C280 234 260 220 240 196 Z
                  M210 280
                  C176 305 160 340 156 382
                  C152 430 168 474 198 508
                  C214 526 232 522 234 504
                  C238 470 238 438 236 404
                  C235 372 238 346 246 322
-                 C252 304 236 268 210 280
-                 Z
-
+                 C252 304 236 268 210 280 Z
                  M390 280
                  C424 305 440 340 444 382
                  C448 430 432 474 402 508
                  C386 526 368 522 366 504
                  C362 470 362 438 364 404
                  C365 372 362 346 354 322
-                 C348 304 364 268 390 280
-                 Z"/>
+                 C348 304 364 268 390 280 Z"/>
 
-            <!-- Regions (clickable) -->
             <g id="regions">
               <path id="head" class="region" data-keys="kopf head"
                 d="M300 78 C274 78 256 97 254 122 C252 152 272 174 300 176 C328 174 348 152 346 122 C344 97 326 78 300 78 Z"/>
-
               <path id="neck" class="region" data-keys="hals neck"
                 d="M282 176 C286 196 286 210 282 224 C292 236 308 236 318 224 C314 210 314 196 318 176 C310 184 290 184 282 176 Z"/>
-
               <path id="shoulders" class="region" data-keys="schultern shoulders"
                 d="M240 196 C262 224 280 236 300 236 C320 236 338 224 360 196 C350 186 336 182 322 184 C314 196 306 202 300 202 C294 202 286 196 278 184 C264 182 250 186 240 196 Z"/>
-
               <path id="chest" class="region" data-keys="brust chest thorax"
                 d="M258 236 C248 260 244 286 244 312 C244 342 254 370 270 388 C286 406 314 406 330 388 C346 370 356 342 356 312 C356 286 352 260 342 236 C326 252 314 260 300 260 C286 260 274 252 258 236 Z"/>
-
               <path id="abdomen" class="region" data-keys="bauch abdomen"
                 d="M270 388 C258 408 252 432 252 456 C252 484 262 510 276 528 C288 544 312 544 324 528 C338 510 348 484 348 456 C348 432 342 408 330 388 C320 398 310 404 300 404 C290 404 280 398 270 388 Z"/>
-
               <path id="pelvis" class="region" data-keys="becken pelvis huefte hüfte"
                 d="M276 528 C262 548 256 568 256 590 C256 622 268 652 286 678 C292 686 296 694 300 704 C304 694 308 686 314 678 C332 652 344 622 344 590 C344 568 338 548 324 528 C316 536 308 540 300 540 C292 540 284 536 276 528 Z"/>
 
@@ -348,20 +309,20 @@
               <path id="arm_upper_r" class="region" data-keys="oberarm rechts rechter arm upper arm right"
                 d="M362 238 C386 252 400 276 402 306 C404 336 396 362 384 382 C374 398 358 394 356 376 C352 344 348 316 340 290 C334 270 342 232 362 238 Z"/>
 
-              <path id="forearm_l" class="region" data-keys="unterarm links linker unterarm forearm left"
+              <path id="forearm_l" class="region" data-keys="unterarm links forearm left"
                 d="M212 382 C196 402 186 428 186 456 C186 484 196 506 210 520 C224 534 240 526 238 508 C236 478 236 452 240 426 C244 404 230 370 212 382 Z"/>
-              <path id="forearm_r" class="region" data-keys="unterarm rechts rechter unterarm forearm right"
+              <path id="forearm_r" class="region" data-keys="unterarm rechts forearm right"
                 d="M388 382 C404 402 414 428 414 456 C414 484 404 506 390 520 C376 534 360 526 362 508 C364 478 364 452 360 426 C356 404 370 370 388 382 Z"/>
 
-              <path id="hand_l" class="region" data-keys="hand links linke hand left hand"
+              <path id="hand_l" class="region" data-keys="hand links left hand"
                 d="M204 520 C188 532 186 554 200 570 C216 588 244 590 258 570 C270 554 264 532 246 520 C232 510 216 510 204 520 Z"/>
-              <path id="hand_r" class="region" data-keys="hand rechts rechte hand right hand"
+              <path id="hand_r" class="region" data-keys="hand rechts right hand"
                 d="M396 520 C412 532 414 554 400 570 C384 588 356 590 342 570 C330 554 336 532 354 520 C368 510 384 510 396 520 Z"/>
 
               <path id="thigh_l" class="region" data-keys="oberschenkel links thigh left"
-                d="M286 678 C266 708 258 744 262 780 C266 812 280 838 292 862 C300 878 320 872 316 854 C306 812 302 774 304 736 C306 714 300 690 292 678 C290 680 288 679 286 678 Z"/>
+                d="M286 678 C266 708 258 744 262 780 C266 812 280 838 292 862 C300 878 320 872 316 854 C306 812 302 774 304 736 C306 714 300 690 292 678 Z"/>
               <path id="thigh_r" class="region" data-keys="oberschenkel rechts thigh right"
-                d="M314 678 C334 708 342 744 338 780 C334 812 320 838 308 862 C300 878 280 872 284 854 C294 812 298 774 296 736 C294 714 300 690 308 678 C310 680 312 679 314 678 Z"/>
+                d="M314 678 C334 708 342 744 338 780 C334 812 320 838 308 862 C300 878 280 872 284 854 C294 812 298 774 296 736 C294 714 300 690 308 678 Z"/>
 
               <path id="knee_l" class="region" data-keys="knie links knee left"
                 d="M270 804 C258 812 252 826 254 840 C256 856 270 866 286 864 C300 862 308 850 306 836 C304 822 286 798 270 804 Z"/>
@@ -380,23 +341,22 @@
             </g>
           </g>
         </svg>
+
       </div>
     </div>
   </section>
 </main>
 
 <script>
-  // ---------------------------
-  // Helpers
-  // ---------------------------
+  // ========= Helpers =========
   const $ = (id) => document.getElementById(id);
 
   function normalize(s){
     return (s||"")
       .toLowerCase()
       .replace(/[ä]/g,"ae").replace(/[ö]/g,"oe").replace(/[ü]/g,"ue").replace(/ß/g,"ss")
-      .replace(/[^a-z0-9\\s]/g," ")
-      .replace(/\\s+/g," ")
+      .replace(/[^a-z0-9\s]/g," ")
+      .replace(/\s+/g," ")
       .trim();
   }
   function escapeHtml(s){
@@ -406,9 +366,7 @@
     $("status").innerHTML = "Status: " + html;
   }
 
-  // ---------------------------
-  // Intensity → CSS var
-  // ---------------------------
+  // ========= Intensity =========
   const rngIntensity = $("rngIntensity");
   function setFillByIntensity(n){
     const a = 0.18 + (n-1) * (0.62/9); // 0.18..0.80
@@ -419,29 +377,26 @@
     setFillByIntensity(parseInt(e.target.value,10));
   });
 
-  // ---------------------------
-  // Click-to-highlight (toggle)
-  // ---------------------------
+  // ========= Regions =========
   const svg = document.querySelector("svg");
   const regions = () => [...svg.querySelectorAll(".region")];
 
   function clearAll(){
     regions().forEach(r => r.classList.remove("active"));
   }
-
   function activate(id){
     const el = svg.getElementById(id);
     if (!el) return false;
     el.classList.add("active");
     return true;
   }
-
-  function activateBoth(base){ // e.g. "hand" -> hand_l + hand_r if both exist
+  function activateBoth(base){
     const a = activate(base + "_l");
     const b = activate(base + "_r");
     return a || b;
   }
 
+  // Click: toggle
   svg.addEventListener("click", (e)=>{
     const el = e.target;
     if (!el.classList.contains("region")) return;
@@ -449,5 +404,200 @@
     setStatus(`<b>${el.id}</b> ${el.classList.contains("active") ? "aktiviert" : "deaktiviert"}.`);
   });
 
-  // ---------------------------
-  // Voice Agent (Web Speech API)
+  // ========= Voice Agent =========
+  const btnMic = $("btnMic");
+  const btnStop = $("btnStop");
+  const btnReset = $("btnReset");
+  const micDot = $("micDot");
+  const micLabel = $("micLabel");
+
+  let recognition = null;
+  let listening = false;
+
+  function supportsSpeech(){
+    return ("webkitSpeechRecognition" in window) || ("SpeechRecognition" in window);
+  }
+  function setMicUI(on){
+    listening = on;
+    micDot.classList.toggle("off", !on);
+    micLabel.textContent = on ? "Mic: An" : "Mic: Aus";
+    btnMic.textContent = on ? "🎙️ Listening…" : "🎙️ Start Listening";
+  }
+
+  function startListening(){
+    if (!supportsSpeech()){
+      setStatus(`Speech Recognition nicht verfügbar. (Chrome/Edge testen)`);
+      return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.lang = "de-DE";
+    recognition.interimResults = true;
+    recognition.continuous = true;
+
+    recognition.onstart = () => {
+      setMicUI(true);
+      setStatus(`Listening… Sag <span class="mono">„Anzeige Hand rechts“</span>.`);
+    };
+
+    recognition.onerror = (e) => {
+      setMicUI(false);
+      setStatus(`Mic-Fehler: <span class="mono">${escapeHtml(e.error)}</span>`);
+    };
+
+    recognition.onend = () => {
+      // auto-restart for agent feel
+      if (listening){
+        try { recognition.start(); } catch(_) {}
+      } else {
+        setMicUI(false);
+      }
+    };
+
+    let lastFinal = "";
+    recognition.onresult = (ev) => {
+      let interim = "";
+      let finalText = "";
+      for (let i = ev.resultIndex; i < ev.results.length; i++){
+        const res = ev.results[i];
+        const txt = res[0].transcript;
+        if (res.isFinal) finalText += txt + " ";
+        else interim += txt + " ";
+      }
+
+      const show = (finalText || interim).trim();
+      if (show) setStatus(`🎧 <span class="mono">${escapeHtml(show)}</span>`);
+
+      if (finalText){
+        const cmd = normalize(finalText);
+        if (cmd === lastFinal) return;
+        lastFinal = cmd;
+        handleCommand(cmd);
+      }
+    };
+
+    try { recognition.start(); } catch(e){
+      setStatus(`Konnte Mic nicht starten: ${escapeHtml(String(e))}`);
+    }
+  }
+
+  function stopListening(){
+    listening = false;
+    setMicUI(false);
+    if (recognition){
+      try { recognition.onend = null; recognition.stop(); } catch(_) {}
+      recognition = null;
+    }
+    setStatus("Mic gestoppt.");
+  }
+
+  // Voice selection is SINGLE-SELECTION (replaces current selection)
+  function handleCommand(cmd){
+    if (cmd.includes("reset") || cmd.includes("alles aus") || cmd.includes("clear")){
+      clearAll();
+      setStatus("Alles zurückgesetzt.");
+      return;
+    }
+
+    const m = cmd.match(/intensitaet\s*(10|[1-9])/);
+    if (m){
+      const v = parseInt(m[1],10);
+      rngIntensity.value = String(v);
+      setFillByIntensity(v);
+      setStatus(`Intensität gesetzt: <b>${v}/10</b>`);
+      return;
+    }
+
+    // Wakeword gate
+    const wake = cmd.includes("anzeige") || cmd.includes("silhouette");
+    if (!wake) return;
+
+    const ok = voiceSelect(cmd);
+    if (!ok){
+      setStatus(`Nicht erkannt. Versuch: <span class="mono">Anzeige Kopf</span> / <span class="mono">Anzeige Hand rechts</span>`);
+    }
+  }
+
+  function voiceSelect(cmd){
+    const t = normalize(cmd);
+    const hasR = /\b(rechts|right)\b/.test(t);
+    const hasL = /\b(links|left)\b/.test(t);
+
+    // Single selection: clear first
+    clearAll();
+
+    if (t.includes("kopf") || t.includes("head")) { activate("head"); return true; }
+    if (t.includes("hals") || t.includes("neck")) { activate("neck"); return true; }
+    if (t.includes("schultern") || t.includes("shoulders")) { activate("shoulders"); return true; }
+    if (t.includes("brust") || t.includes("chest") || t.includes("thorax")) { activate("chest"); return true; }
+    if (t.includes("bauch") || t.includes("abdomen")) { activate("abdomen"); return true; }
+    if (t.includes("becken") || t.includes("pelvis") || t.includes("huefte") || t.includes("hüfte")) { activate("pelvis"); return true; }
+
+    if (t.includes("hand")){
+      if (!hasL && !hasR) { activateBoth("hand"); return true; }
+      activate(hasR ? "hand_r" : "hand_l"); return true;
+    }
+    if (t.includes("unterarm") || t.includes("forearm")){
+      if (!hasL && !hasR) { activate("forearm_l"); activate("forearm_r"); return true; }
+      activate(hasR ? "forearm_r" : "forearm_l"); return true;
+    }
+    if (t.includes("oberarm") || (t.includes("arm") && !t.includes("unterarm"))){
+      if (!hasL && !hasR) { activate("arm_upper_l"); activate("arm_upper_r"); return true; }
+      activate(hasR ? "arm_upper_r" : "arm_upper_l"); return true;
+    }
+    if (t.includes("oberschenkel") || t.includes("thigh")){
+      if (!hasL && !hasR) { activate("thigh_l"); activate("thigh_r"); return true; }
+      activate(hasR ? "thigh_r" : "thigh_l"); return true;
+    }
+    if (t.includes("knie") || t.includes("knee")){
+      if (!hasL && !hasR) { activate("knee_l"); activate("knee_r"); return true; }
+      activate(hasR ? "knee_r" : "knee_l"); return true;
+    }
+    if (t.includes("wade") || t.includes("calf")){
+      if (!hasL && !hasR) { activate("calf_l"); activate("calf_r"); return true; }
+      activate(hasR ? "calf_r" : "calf_l"); return true;
+    }
+    if (t.includes("fuss") || t.includes("fuß") || t.includes("foot")){
+      if (!hasL && !hasR) { activate("foot_l"); activate("foot_r"); return true; }
+      activate(hasR ? "foot_r" : "foot_l"); return true;
+    }
+
+    // Fallback: match any region by data-keys
+    const hit = regions().find(r => normalize(r.dataset.keys||"").split(" ").some(k => t.includes(k)));
+    if (hit){
+      hit.classList.add("active");
+      return true;
+    }
+    return false;
+  }
+
+  // ========= UI wiring =========
+  btnMic.addEventListener("click", ()=>{
+    if (listening) return;
+    listening = true;
+    startListening();
+  });
+  btnStop.addEventListener("click", stopListening);
+
+  btnReset.addEventListener("click", ()=>{
+    clearAll();
+    setStatus("Reset.");
+  });
+
+  window.addEventListener("keydown", (e)=>{
+    if (e.key === "Escape"){
+      clearAll();
+      setStatus("Reset.");
+    }
+    if (e.code === "Space"){
+      e.preventDefault();
+      if (listening) stopListening();
+      else { listening = true; startListening(); }
+    }
+  });
+
+  setStatus(`Bereit. Klick auf Regionen oder sag <span class="mono">Anzeige Kopf</span>.`);
+</script>
+
+</body>
+</html>
